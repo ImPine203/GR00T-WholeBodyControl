@@ -1,0 +1,13 @@
+# Clean forward-walk baseline for VR H3 WASD training.
+# Keep this list narrow: normal/neutral forward walking only.
+# Action names are normalized by stripping suffixes like _001__A002 and _001__A002_M.
+idle_loop
+neutral_idle_loop
+walk_ff_loop_180_R
+walk_ff_loop_180_R_normal_pace
+neutral_walk_180_R
+walk_forward_loop
+walk_forward_normal
+Neutral_walk_forward
+Relaxed_walk_forward
+Loop_Forward_Walk

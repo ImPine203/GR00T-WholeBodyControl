@@ -1,0 +1,12 @@
+<mujoco model="vr_h3_1">
+  <include file="vr_h3_1_sensors.xml"/>
+  <include file="rh56e2_hand_sensors.xml"/>
+  <include file="vr_h3_1_actuators.xml"/>
+  <include file="rh56e2_hand_actuators.xml"/>
+  <include file="vr_h3_1_with_rh56e2_hand_and_band.xml"/>
+  <include file="scene.xml"/>
+
+  <keyframe>
+    <key name="home" qpos="0 0 0.85 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"/>
+  </keyframe>
+</mujoco>

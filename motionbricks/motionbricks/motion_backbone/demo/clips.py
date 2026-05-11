@@ -16,6 +16,15 @@ from typing import Union
 NUM_FRAMES_PER_TOKEN = 4
 time_stamp = time.strftime("%Y%m%d_%H%M%S")
 
+
+def get_clip_holder_class(clips: str):
+    key = clips.lower()
+    if key in ["g1"]:
+        return clip_holder_G1
+    if key in ["vr_h3", "vrh3", "h3"]:
+        return clip_holder_VR_H3
+    raise ValueError(f"Unsupported clips '{clips}'. Supported clips: G1, vr_h3")
+
 def get_clip_data(clip_id: Union[str, int], train_dataloader: DataLoader):
     """ @brief: get the clip data from the dataloader """
     if type(clip_id) == int:
@@ -53,6 +62,15 @@ class clip_holder(t.nn.Module):
         for key, value in state_dict.items():
             key = key_remap.get(key, key)
             self.register_buffer(key, value)
+
+        if self._converter is not None and hasattr(self, "motion_feature"):
+            expected_dim = self._converter.motion_rep.motion_rep_dim
+            actual_dim = self.motion_feature.shape[-1]
+            if actual_dim != expected_dim:
+                raise ValueError(
+                    f"Clip cache '{ckpt_path}' has motion_feature dim {actual_dim}, "
+                    f"but current motion_rep expects {expected_dim}. Rebuild the clip cache."
+                )
 
     def _preprocess_clips_from_dataloader(self, train_dataloader: DataLoader, val_dataloader: DataLoader,
                                           visualize_clips: bool = False, ckpt_path: str = None):
@@ -111,7 +129,8 @@ class clip_holder(t.nn.Module):
                                                  'global_joint_rotations', 'global_headings',
                                                  'motion_feature', 'mujoco_qpos'],
                                                 [[3], [num_joints, 3], [num_joints, 3, 3], [],
-                                                 [motion_feature_shape], [36]]):
+                                                 [motion_feature_shape],
+                                                 [self.CLIPS[list(self.CLIPS.keys())[0]]['mujoco_qpos'].shape[-1]]]):
             data_buffer = t.zeros([len(self.CLIPS), max_num_frames, *feat_shape])
             num_frames_per_clip = t.zeros([len(self.CLIPS)], dtype=t.int32)
             for clip_idx, clip_name in enumerate(self.CLIPS):
@@ -125,6 +144,11 @@ class clip_holder(t.nn.Module):
     def _apply_root_headings_correction(self):
         """ @brief: apply the root headings correction to the clips; since cetain root project is ill defined."""
         pass
+
+    def blendspace_modes_remap_from_velocity(self, mode: t.Tensor,
+                                             target_movement_direction: t.Tensor,
+                                             target_heading: t.Tensor):
+        return mode
 
 class clip_holder_G1(clip_holder):
     LOAD_FROM_CLIP_NAME = True
@@ -261,3 +285,36 @@ class clip_holder_G1(clip_holder):
             t.full_like(mode, indices_of_walk_right) * t.logical_and(is_slow_walk_or_walk, going_right) + \
             t.full_like(mode, indices_of_walk_left) * t.logical_and(is_slow_walk_or_walk, going_left)
         return mode
+
+
+class clip_holder_VR_H3(clip_holder):
+    LOAD_FROM_CLIP_NAME = True
+    CLIPS = {
+        "idle": {
+            "clip_id": 0,
+            "start_frame": 0,
+            "end_frame": 64,
+            "avg_root_vel": 0.0,
+            "allowed_pred_num_tokens": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+        },
+        "slow_walk": {
+            "clip_id": 1,
+            "start_frame": 0,
+            "end_frame": 64,
+            "avg_root_vel": 0.2,
+            "allowed_pred_num_tokens": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+        },
+        "walk": {
+            "clip_id": 2,
+            "start_frame": 0,
+            "end_frame": 64,
+            "avg_root_vel": 0.3,
+            "allowed_pred_num_tokens": [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+        },
+    }
+
+    DEFAULT_KEYS = {
+        "idle": "",
+        "slow_walk": "v",
+        "walk": "",
+    }

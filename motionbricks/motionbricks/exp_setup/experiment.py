@@ -12,6 +12,17 @@ EXP = [
     "default",
 ][-1]
 
+
+def _latest_ckpt(result_dir: str, model_path: str, fallback: str):
+    ckpt_dir = os.path.join(result_dir, model_path, "version_1", "checkpoints")
+    if not os.path.isdir(ckpt_dir):
+        return fallback
+    ckpts = [x for x in os.listdir(ckpt_dir) if x.endswith(".ckpt")]
+    if not ckpts:
+        return fallback
+    return max(ckpts, key=lambda name: os.path.getmtime(os.path.join(ckpt_dir, name)))
+
+
 def get_path_dir(exp):
     if exp == "default":
         vqvae_path = 'motionbricks_vqvae'
@@ -22,6 +33,18 @@ def get_path_dir(exp):
 
         root_model_path = 'motionbricks_root'
         root_model_ckpt = 'model-step=2000000.ckpt'
+
+    elif exp in ["vr_h3", "vrh3", "h3"]:
+        result_dir = getattr(get_path_dir, "result_dir", DEFAULT_RESULT_DIR)
+
+        vqvae_path = 'motionbricks_vr_h3_vqvae'
+        vqvae_ckpt = _latest_ckpt(result_dir, vqvae_path, 'model-step=2000000.ckpt')
+
+        pose_model_path = 'motionbricks_vr_h3_pose'
+        pose_model_ckpt = _latest_ckpt(result_dir, pose_model_path, 'model-step=2000000.ckpt')
+
+        root_model_path = 'motionbricks_vr_h3_root'
+        root_model_ckpt = _latest_ckpt(result_dir, root_model_path, 'model-step=2000000.ckpt')
 
     else:
         raise NotImplementedError(f"exp {exp} not implemented.")
@@ -43,6 +66,7 @@ def test(args: argparse.Namespace = None):
         exp = args.EXP
     else:
         exp = EXP
+    get_path_dir.result_dir = args.result_dir
     ckpt_info = get_path_dir(exp)
 
     models, confs = {}, {}
@@ -55,6 +79,9 @@ def test(args: argparse.Namespace = None):
 
         conf = OmegaConf.load(config_path)
         conf.ckpt_path = ckpt_path
+        if exp in ["vr_h3", "vrh3", "h3"] and model_name == "pose":
+            conf.model.args.vqvae_model_ckpt_path = \
+                f"{args.result_dir}/{ckpt_info['vqvae_path']}/version_1/checkpoints/{ckpt_info['vqvae_ckpt']}"
 
         if type(conf.model.args.vqvae_model_ckpt_path) == str:
             for prefix in LOCAL_RESULT_DIR:

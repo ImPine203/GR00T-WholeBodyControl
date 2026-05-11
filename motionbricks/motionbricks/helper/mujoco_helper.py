@@ -108,7 +108,7 @@ _global_converter = None
 def get_mujoco_converter(motion_rep: MotionRepBase, xml_path: str = "assets/skeletons/g1/g1.xml"):
     """Get a cached mujoco converter instance for efficient reuse."""
     global _global_converter
-    if _global_converter is None:
+    if _global_converter is None or getattr(_global_converter, "xml_path", None) != xml_path:
         _global_converter = mujoco_qpos_converter(motion_rep, xml_path)
     return _global_converter
 
@@ -178,7 +178,11 @@ class mujoco_qpos_converter(nn.Module):
             if j:
                 joint_axes[xml_class.get("class")] = j[0].get("axis")
 
-        mujoco_hinge_joints = root.find("worldbody").findall(".//joint")  # skip the base joint
+        all_mujoco_joints = root.find("worldbody").findall(".//joint")
+        mujoco_hinge_joints = [joint for joint in all_mujoco_joints if joint.get("type", "hinge") == "hinge"]
+        parent_map = {child: parent for parent in root.iter() for child in parent}
+        joint_to_hinge_id = {joint: idx for idx, joint in enumerate(mujoco_hinge_joints)}
+        body_to_hinge_id = {parent_map[joint]: idx for idx, joint in enumerate(mujoco_hinge_joints)}
         self._mujoco_joint_axis_values_motion_space = \
             t.zeros((len(mujoco_hinge_joints), 3), dtype=t.float32)  # mujoco order but motion space
         self._mujoco_joint_axis_values_mujoco_space = \
@@ -186,24 +190,30 @@ class mujoco_qpos_converter(nn.Module):
 
         # for the below indices, mujoco_indices_to_motion_indices does not include mujoco root (30 - 1 = 29 elements),
         # while motion_indices_to_mujoco_indices includes the motion root (32 elements).
-        self._mujoco_indices_to_motion_indices = t.zeros((len(mujoco_hinge_joints),), dtype=t.int32)
+        self._mujoco_indices_to_motion_indices = t.ones((len(mujoco_hinge_joints),), dtype=t.int32) * -1
         self._motion_indices_to_mujoco_indices = \
             t.ones((self.motion_rep.skeleton.nbjoints,), dtype=t.int32) * -1  # -1 means not in the mujoco skeleton
 
         self._nb_joints_mujoco = len(mujoco_hinge_joints) + 1
         self._nb_joints_motion = self.motion_rep.skeleton.nbjoints
         self._mujoco_joint_including_root_parent_list = t.full((len(mujoco_hinge_joints) + 1,), -1, dtype=t.int32)
-        self._mujoco_joint_including_root_list = ['pelvis_skel']
+        self._mujoco_joint_including_root_list = [self.motion_rep.skeleton.bone_order_names[0]]
+
+        def get_parent_mujoco_joint_idx(joint):
+            body = parent_map[joint]
+            ancestor = parent_map.get(body)
+            while ancestor is not None:
+                if ancestor in body_to_hinge_id:
+                    return body_to_hinge_id[ancestor] + 1
+                ancestor = parent_map.get(ancestor)
+            return 0
 
         for joint_id_in_csv, joint in enumerate(mujoco_hinge_joints):
             joint_name_in_skeleton = joint.get("name").replace("_joint", "_skel")
-            joint_parent_name_in_skeleton = self.motion_rep.skeleton.bone_parents[joint_name_in_skeleton]
-
             self._mujoco_joint_including_root_list.append(joint_name_in_skeleton)
             self._mujoco_joint_including_root_parent_list[joint_id_in_csv + 1] = \
-                self._mujoco_joint_including_root_list.index(joint_parent_name_in_skeleton)
+                get_parent_mujoco_joint_idx(joint)
 
-            joint_idx_in_skeleton = self.motion_rep.skeleton.bone_order_names.index(joint_name_in_skeleton)
             axis_values = [
                 float(x) for x in
                 (
@@ -215,11 +225,15 @@ class mujoco_qpos_converter(nn.Module):
             # the mapped axis in motion skeleton space is calculated as motion_axis = mujoco_to_motion.apply(axis_values)
             # [1, 0, 0] -> [0, 0, 1]; [0, 1, 0] -> [1, 0, 0]; [0, 0, 1] -> [0, 1, 0]
             mujoco_joint_axis_mapping_motion_space = \
-                [t.tensor([0, 0, 1]), t.tensor([1, 0, 0]), t.tensor([0, 1, 0])][np.argmax(axis_values)]
+                [t.tensor([0, 0, 1]), t.tensor([1, 0, 0]), t.tensor([0, 1, 0])][np.argmax(np.abs(axis_values))]
 
             self._mujoco_joint_axis_values_motion_space[joint_id_in_csv] = mujoco_joint_axis_mapping_motion_space
             self._mujoco_joint_axis_values_mujoco_space[joint_id_in_csv] = t.tensor(axis_values)
 
+            if joint_name_in_skeleton not in self.motion_rep.skeleton.bone_order_names:
+                continue
+
+            joint_idx_in_skeleton = self.motion_rep.skeleton.bone_order_names.index(joint_name_in_skeleton)
             self._mujoco_indices_to_motion_indices[joint_id_in_csv] = joint_idx_in_skeleton
             self._motion_indices_to_mujoco_indices[joint_idx_in_skeleton] = joint_id_in_csv + 1  # +1 for the root
         self._motion_indices_to_mujoco_indices[0] = 0  # the root joint mapping
@@ -237,7 +251,6 @@ class mujoco_qpos_converter(nn.Module):
 
         self._rot_offsets_f2q = t.zeros(len(self._motion_indices_to_mujoco_indices), 3, 3, dtype=t.float32)
         self._rot_offsets_f2q[...] = t.eye(3)[None]
-        parent_map = {child: parent for parent in root.iter() for child in parent}
         for i, joint in enumerate(mujoco_hinge_joints):
             body = parent_map[joint]
             if "quat" in body.attrib:
@@ -246,9 +259,10 @@ class mujoco_qpos_converter(nn.Module):
                     scalar_first=True
                 )
                 idx = self._mujoco_indices_to_motion_indices[i]
-                self._rot_offsets_q2t[idx] = torch.from_numpy(rot.as_matrix())
-                rot = mujoco_to_motion * rot * mujoco_to_motion.inv()
-                self._rot_offsets_f2q[idx] = torch.from_numpy(rot.as_matrix().T)
+                if idx >= 0:
+                    self._rot_offsets_q2t[idx] = torch.from_numpy(rot.as_matrix())
+                    rot = mujoco_to_motion * rot * mujoco_to_motion.inv()
+                    self._rot_offsets_f2q[idx] = torch.from_numpy(rot.as_matrix().T)
 
         self._capture_neutral_joints_mujoco = t.zeros(len(self._mujoco_indices_to_motion_indices) + 1, 3, dtype=t.float32)
         for i, joint in enumerate(mujoco_hinge_joints):
@@ -272,8 +286,8 @@ class mujoco_qpos_converter(nn.Module):
             is_normalized: Whether the input features are normalized
 
         Returns:
-            torch.Tensor of shape [batch, numFrames, 36] containing mujoco qpos data:
-            - root_trans (3) + root_quat (4) + joint_dofs (29) = 36 columns
+            torch.Tensor of shape [batch, numFrames, 7 + num_joints] containing mujoco qpos data:
+            - root_trans (3) + root_quat (4) + joint_dofs (num_joints) = 7 + num_joints columns
         """
         # Get joint output from motion representation
         batch_size, num_frames, nb_joints = motion_features.shape[0], motion_features.shape[1], motion_rep.skeleton.nbjoints
@@ -294,8 +308,8 @@ class mujoco_qpos_converter(nn.Module):
         # Move precomputed matrices to the same device/dtype
         motion_to_mujoco_matrix = self.motion_to_mujoco_matrix.to(device=device, dtype=dtype)
 
-        # Initialize output tensor: [batch, numFrames, 36]
-        qpos = t.zeros((batch_size, num_frames, 36), dtype=dtype, device=device)
+        # Initialize output tensor: [batch, numFrames, 7 + num_joints]
+        qpos = t.zeros((batch_size, num_frames, 7 + self._nb_joints_mujoco - 1), dtype=dtype, device=device)
 
         # Convert root translation: apply coordinate transformation
         root_translation_mujoco = t.matmul(motion_to_mujoco_matrix[None, None, ...],
@@ -316,15 +330,20 @@ class mujoco_qpos_converter(nn.Module):
             qpos[:, :, 3: 7] = root_rot_quat[:, :, [1, 2, 3, 0]]  # [w, x, y, z] -> [x, y, z, w]
 
         # Convert joint DOFs using precomputed mappings
+        mask_valid_mujoco = self._mujoco_indices_to_motion_indices != -1
+        valid_motion_indices = self._mujoco_indices_to_motion_indices[mask_valid_mujoco].long()
+        
         joint_rot_mujoco = \
-            local_joint_rot[:, :, self._mujoco_indices_to_motion_indices, :]  # mujoco joint order but motion feature space
+            local_joint_rot[:, :, valid_motion_indices, :]  # mujoco joint order but motion feature space
         x_joint_dof = t.atan2(joint_rot_mujoco[..., 2, 1], joint_rot_mujoco[..., 2, 2])
         y_joint_dof = t.atan2(joint_rot_mujoco[..., 0, 2], joint_rot_mujoco[..., 0, 0])
         z_joint_dof = t.atan2(joint_rot_mujoco[..., 1, 0], joint_rot_mujoco[..., 1, 1])
         xyz_joint_dofs = t.stack([x_joint_dof, y_joint_dof, z_joint_dof], dim=-1)
         joint_dofs = \
-            (xyz_joint_dofs * self._mujoco_joint_axis_values_motion_space[None, None, :, :].to(device)).sum(dim=-1)
-        qpos[:, :, 7:] = joint_dofs
+            (xyz_joint_dofs * self._mujoco_joint_axis_values_motion_space[mask_valid_mujoco][None, None, :, :].to(device)).sum(dim=-1)
+        
+        # Fill only the valid joints in qpos
+        qpos[:, :, 7:][:, :, mask_valid_mujoco] = joint_dofs
 
         return qpos
 
@@ -343,7 +362,10 @@ class mujoco_qpos_converter(nn.Module):
         root_rotation_mujoco = quaternion_to_matrix(root_quat_mujoco)
 
         # the joint rotations from dof and rotation axis
-        dof = mujoco_qpos[:, :, 7:]  # batch_size, num_frames=4, joints=30 - 1 (pelvis) = 29
+        mask_valid_mujoco = self._mujoco_indices_to_motion_indices != -1
+        valid_motion_indices = self._mujoco_indices_to_motion_indices[mask_valid_mujoco].long()
+        
+        dof = mujoco_qpos[:, :, 7:]  # batch_size, num_frames, num_mujoco_hinge_joints
         quaternion_if_x_axis = t.stack([t.cos(dof / 2), t.sin(dof / 2), t.zeros_like(dof), t.zeros_like(dof)], dim=-1)
         quaternion_if_y_axis = t.stack([t.cos(dof / 2), t.zeros_like(dof), t.sin(dof / 2), t.zeros_like(dof)], dim=-1)
         quaternion_if_z_axis = t.stack([t.cos(dof / 2), t.zeros_like(dof), t.zeros_like(dof), t.sin(dof / 2)], dim=-1)
@@ -354,11 +376,24 @@ class mujoco_qpos_converter(nn.Module):
             self._mujoco_joint_axis_values_mujoco_space[None, None, :, None, :].to(device)
         ).sum(dim=-1)
         joint_rotation_matrix = quaternion_to_matrix(joint_quaternion)  # [batch_size, num_frames, joints, 3, 3]
-        joint_rotation_matrix = t.matmul(self._rot_offsets_q2t.to(device)[self._mujoco_indices_to_motion_indices],
-                                         joint_rotation_matrix)
-
+        
+        # Apply rotation offsets only to valid joints
+        joint_rotation_matrix_valid = joint_rotation_matrix[:, :, mask_valid_mujoco, :, :]
+        joint_rotation_matrix_valid = t.matmul(self._rot_offsets_q2t.to(device)[valid_motion_indices],
+                                             joint_rotation_matrix_valid)
+        
+        # We only need the valid joints for FK if we want to produce motion transforms
+        # But wait, FK needs the full tree to compute global positions correctly if there are joints in between.
+        # If we skip fingers, it's fine because they are usually end-effectors.
+        # But if we skip a joint in the middle of the chain, FK will be wrong.
+        
+        # However, MotionBricks skeleton assumes a specific tree. 
+        # The best way is to fill the full MuJoCo rotation matrix and run FK.
+        joint_rotation_matrix_full = joint_rotation_matrix.clone()
+        joint_rotation_matrix_full[:, :, mask_valid_mujoco, :, :] = joint_rotation_matrix_valid
+        
         # run FK to compute joint positions
-        rot_matrices = t.concat([root_rotation_mujoco[:, :, None, :, :], joint_rotation_matrix], dim=2)
+        rot_matrices = t.concat([root_rotation_mujoco[:, :, None, :, :], joint_rotation_matrix_full], dim=2)
         rot_matrices = rot_matrices.view(batch_size * num_frames, self._nb_joints_mujoco, 3, 3)
         global_joint_positions, global_joint_rotations = forward_kinematics(
             rot_matrices,

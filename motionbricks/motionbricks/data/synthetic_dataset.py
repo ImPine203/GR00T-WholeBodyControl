@@ -1,4 +1,5 @@
 import random
+from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
 import torch
@@ -34,6 +35,21 @@ class SyntheticMotionDataset(Dataset):
         T = self.lengths[idx]
         motion = torch.randn(T, self.feat_dim)
         return {"keyid": idx, "motion": motion}
+
+
+class TorchMotionDataset(Dataset):
+    """Dataset backed by a torch file containing precomputed motion features."""
+
+    def __init__(self, path: str):
+        data = torch.load(Path(path), map_location="cpu", weights_only=False)
+        self.motions = data["motions"]
+        self.keyids = data.get("keyids", list(range(len(self.motions))))
+
+    def __len__(self):
+        return len(self.motions)
+
+    def __getitem__(self, idx):
+        return {"keyid": self.keyids[idx], "motion": self.motions[idx].float()}
 
 
 def collate_tensors(

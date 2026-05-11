@@ -2,9 +2,10 @@ from motionbricks.motion_backbone.inference.motion_inference import motion_infer
 from copy import deepcopy
 import torch as t
 from torch.utils.data import DataLoader
-from motionbricks.motion_backbone.demo.clips import clip_holder_G1
+from motionbricks.motion_backbone.demo.clips import get_clip_holder_class
 from motionbricks.helper.mujoco_helper import get_mujoco_converter
 import time
+import mujoco
 from scipy.spatial.transform import Rotation as R
 from motionbricks.motionlib.core.utils.rotations import angle_to_Y_rotation_matrix, matrix_to_cont6d, quat_apply, quat_mul
 from motionbricks.motionlib.core.utils.rotations import quaternion_to_matrix
@@ -51,9 +52,11 @@ class full_navigation_agent(t.nn.Module):
         self._inferencer = inferencer.eval().to(device)
         self._motion_rep = deepcopy(inferencer.motion_rep).to(device)  # make a copy to avoid gpu cpu transfer
         self._converter = get_mujoco_converter(self._motion_rep, skeleton_xml).to(device)
-        self._clip_holder = clip_holder_G1(train_dataloader=train_dataloader, ckpt_path=ckpt_path,
-                                                converter=self._converter, reprocess_clips=reprocess_clips,
-                                                val_dataloader=val_dataloader)
+        self._initialize_qpos_limits(skeleton_xml)
+        clip_holder_class = get_clip_holder_class(clips)
+        self._clip_holder = clip_holder_class(train_dataloader=train_dataloader, ckpt_path=ckpt_path,
+                                              converter=self._converter, reprocess_clips=reprocess_clips,
+                                              val_dataloader=val_dataloader)
         self._train_dataloader = train_dataloader
         self._device = device
         self._fps = self._motion_rep.fps
@@ -78,6 +81,26 @@ class full_navigation_agent(t.nn.Module):
         self._initialize_frames()
         self._has_prebaked_inference_engine = False
 
+    def _initialize_qpos_limits(self, skeleton_xml: str):
+        model = mujoco.MjModel.from_xml_path(skeleton_xml)
+        qpos_lower = t.full((model.nq,), -float("inf"), dtype=t.float32)
+        qpos_upper = t.full((model.nq,), float("inf"), dtype=t.float32)
+        for joint_id in range(model.njnt):
+            if model.jnt_type[joint_id] != mujoco.mjtJoint.mjJNT_HINGE:
+                continue
+            if not model.jnt_limited[joint_id]:
+                continue
+            qpos_adr = model.jnt_qposadr[joint_id]
+            qpos_lower[qpos_adr] = float(model.jnt_range[joint_id, 0])
+            qpos_upper[qpos_adr] = float(model.jnt_range[joint_id, 1])
+        self.register_buffer("_qpos_lower", qpos_lower, persistent=False)
+        self.register_buffer("_qpos_upper", qpos_upper, persistent=False)
+
+    def _clamp_qpos_to_joint_limits(self, qpos: t.Tensor):
+        lower = self._qpos_lower.to(device=qpos.device, dtype=qpos.dtype)
+        upper = self._qpos_upper.to(device=qpos.device, dtype=qpos.dtype)
+        return t.maximum(t.minimum(qpos, upper), lower)
+
     def set_prebaked_inference_engine(self):
         raise NotImplementedError("Prebaked inference engine is not implemented yet")
 
@@ -98,6 +121,7 @@ class full_navigation_agent(t.nn.Module):
         )
         root_rot = self.frames['mujoco_qpos'][:, :, 3: 7].clone()
         self.frames['mujoco_qpos'][:, :, 3: 7] = root_rot[:, :, [3, 0, 1, 2]]
+        self.frames['mujoco_qpos'] = self._clamp_qpos_to_joint_limits(self.frames['mujoco_qpos'])
         NUM_MIN_FRAMES_IN_BUFFER = 64
         if self.frames['mujoco_qpos'].shape[1] < NUM_MIN_FRAMES_IN_BUFFER:
             self.frames['mujoco_qpos'] = t.cat(
@@ -484,6 +508,7 @@ class full_navigation_agent(t.nn.Module):
         if self.FORCE_CANONICALIZATION:
             input['mujoco_qpos'] = self.frames['mujoco_qpos']
             self.frames['mujoco_qpos'] = self._uncanonicalize_mujoco_qpos(input)
+        self.frames['mujoco_qpos'] = self._clamp_qpos_to_joint_limits(self.frames['mujoco_qpos'])
         self._current_frame_idx = self.NUM_FRAMES_PER_TOKEN - self.PRED_OFFSETS
 
         if self.FILTER_QPOS:
@@ -497,6 +522,7 @@ class full_navigation_agent(t.nn.Module):
                 ctx[:, :, :3] * (1 - blend) + self.frames['mujoco_qpos'][:, :num_ctx, :3] * blend
             self.frames['mujoco_qpos'][:, :num_ctx, 7:] = \
                 ctx[:, :, 7:] * (1 - blend) + self.frames['mujoco_qpos'][:, :num_ctx, 7:] * blend
+            self.frames['mujoco_qpos'] = self._clamp_qpos_to_joint_limits(self.frames['mujoco_qpos'])
 
         return self.frames['model_features'], self.frames['mujoco_qpos'], self.frames['num_pred_frames']
 

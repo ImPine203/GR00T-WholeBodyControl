@@ -1,5 +1,5 @@
 import torch as t
-from motionbricks.motion_backbone.demo.clips import clip_holder_G1
+from motionbricks.motion_backbone.demo.clips import get_clip_holder_class
 import mujoco
 import numpy as np
 from scipy.spatial.transform import Rotation as R
@@ -50,7 +50,7 @@ class base_controller(object):
         self._prev_qpos: np.ndarray = None
         self._FPS = 30
         self._CONTROLLER_DT = 8 / self._FPS  # regenerate the results every 8 frames
-        self._clip_holder_class = clip_holder_G1
+        self._clip_holder_class = get_clip_holder_class(clips)
         self._min_token = min_token
         self._max_token = max_token
 
@@ -168,23 +168,27 @@ class WASD_controller(base_controller):
 
     def _generate_target_position_and_heading(self, viewer, mj_model: mujoco.MjModel,
                                               mj_data: mujoco.MjData, key_pressed: dict, mode: str):
-        # get the current camera's lookat position and camera position; use the two position to decide where to go
-        lookat_position = viewer.cam.lookat
+        if viewer is not None:
+            # get the current camera's lookat position and camera position; use the two position to decide where to go
+            lookat_position = viewer.cam.lookat
 
-        cam_distance = viewer.cam.distance
-        cam_azimuth = -np.radians(viewer.cam.azimuth) - np.pi / 2.0
-        cam_elevation = -1 * np.radians(viewer.cam.elevation)  # negative elevation means looking down
+            cam_distance = viewer.cam.distance
+            cam_azimuth = -np.radians(viewer.cam.azimuth) - np.pi / 2.0
+            cam_elevation = -1 * np.radians(viewer.cam.elevation)  # negative elevation means looking down
 
-        # Compute actual camera position
-        cam_pos = lookat_position + cam_distance * np.array([
-            np.cos(cam_elevation) * np.sin(cam_azimuth),
-            np.cos(cam_elevation) * np.cos(cam_azimuth),
-            np.sin(cam_elevation)
-        ])
+            # Compute actual camera position
+            cam_pos = lookat_position + cam_distance * np.array([
+                np.cos(cam_elevation) * np.sin(cam_azimuth),
+                np.cos(cam_elevation) * np.cos(cam_azimuth),
+                np.sin(cam_elevation)
+            ])
 
-        # the camera direction
-        camera_direction = (lookat_position - cam_pos) * np.array([1.0, 1.0, 0.0])
-        camera_direction = camera_direction / np.linalg.norm(camera_direction)
+            # the camera direction
+            camera_direction = (lookat_position - cam_pos) * np.array([1.0, 1.0, 0.0])
+            camera_direction = camera_direction / (np.linalg.norm(camera_direction) + 1e-5)
+        else:
+            # Default camera direction if no viewer is present (e.g., looking along +X)
+            camera_direction = np.array([1.0, 0.0, 0.0])
 
         if mode != 'idle':
             # get the control's relative direction
@@ -287,4 +291,3 @@ class random_controller(base_controller):
                          "movement_angle": movement_angle, "facing_angle": facing_angle}
         self._control['allowed_pred_num_tokens'] = self.get_default_allowed_pred_num_tokens(mode.item())
         return copy.deepcopy(self._control)
-

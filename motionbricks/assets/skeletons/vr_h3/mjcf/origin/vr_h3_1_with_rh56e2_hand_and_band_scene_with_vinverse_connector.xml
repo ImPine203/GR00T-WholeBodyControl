@@ -1,0 +1,17 @@
+<mujoco model="vr_h3_1">
+  <include file="vr_h3_1_with_rh56e2_hand_and_band_scene.xml"/>
+
+  <extension>
+    <plugin plugin="mujoco.vinverse_connector">
+      <instance name="vinverse_client">
+        <config key="port" value="46000" />
+        <config key="interface" value="lo"/>
+        <config key="multicast_group" value=""/>
+        <config key="enable_hand" value="true"/>
+        <config key="sim_time_step" value="0.001"/>
+        <config key="loop_frequency" value="1000"/>
+        <config key="hand_port" value="48000"/>
+      </instance>
+    </plugin>
+  </extension>
+</mujoco>

@@ -1,0 +1,42 @@
+<mujoco>
+  <sensor>
+    <jointpos name="L_thumb_swing_joint_pos" joint="L_thumb_swing_joint" />
+    <jointpos name="L_thumb_1_joint_pos" joint="L_thumb_1_joint" />
+    <jointpos name="L_index_1_joint_pos" joint="L_index_1_joint" />
+    <jointpos name="L_middle_1_joint_pos" joint="L_middle_1_joint" />
+    <jointpos name="L_ring_1_joint_pos" joint="L_ring_1_joint" />
+    <jointpos name="L_pinky_1_joint_pos" joint="L_pinky_1_joint" />
+    <jointpos name="R_thumb_swing_joint_pos" joint="R_thumb_swing_joint" />
+    <jointpos name="R_thumb_1_joint_pos" joint="R_thumb_1_joint" />
+    <jointpos name="R_index_1_joint_pos" joint="R_index_1_joint" />
+    <jointpos name="R_middle_1_joint_pos" joint="R_middle_1_joint" />
+    <jointpos name="R_ring_1_joint_pos" joint="R_ring_1_joint" />
+    <jointpos name="R_pinky_1_joint_pos" joint="R_pinky_1_joint" />
+
+    <jointvel name="L_thumb_swing_joint_velocity" joint="L_thumb_swing_joint" />
+    <jointvel name="L_thumb_1_joint_velocity" joint="L_thumb_1_joint" />
+    <jointvel name="L_index_1_joint_velocity" joint="L_index_1_joint" />
+    <jointvel name="L_middle_1_joint_velocity" joint="L_middle_1_joint" />
+    <jointvel name="L_ring_1_joint_velocity" joint="L_ring_1_joint" />
+    <jointvel name="L_pinky_1_joint_velocity" joint="L_pinky_1_joint" />
+    <jointvel name="R_thumb_swing_joint_velocity" joint="R_thumb_swing_joint" />
+    <jointvel name="R_thumb_1_joint_velocity" joint="R_thumb_1_joint" />
+    <jointvel name="R_index_1_joint_velocity" joint="R_index_1_joint" />
+    <jointvel name="R_middle_1_joint_velocity" joint="R_middle_1_joint" />
+    <jointvel name="R_ring_1_joint_velocity" joint="R_ring_1_joint" />
+    <jointvel name="R_pinky_1_joint_velocity" joint="R_pinky_1_joint" />
+
+    <jointactuatorfrc name="L_thumb_swing_joint_torque" joint="L_thumb_swing_joint" />
+    <jointactuatorfrc name="L_thumb_1_joint_torque" joint="L_thumb_1_joint" />
+    <jointactuatorfrc name="L_index_1_joint_torque" joint="L_index_1_joint" />
+    <jointactuatorfrc name="L_middle_1_joint_torque" joint="L_middle_1_joint" />
+    <jointactuatorfrc name="L_ring_1_joint_torque" joint="L_ring_1_joint" />
+    <jointactuatorfrc name="L_pinky_1_joint_torque" joint="L_pinky_1_joint" />
+    <jointactuatorfrc name="R_thumb_swing_joint_torque" joint="R_thumb_swing_joint" />
+    <jointactuatorfrc name="R_thumb_1_joint_torque" joint="R_thumb_1_joint" />
+    <jointactuatorfrc name="R_index_1_joint_torque" joint="R_index_1_joint" />
+    <jointactuatorfrc name="R_middle_1_joint_torque" joint="R_middle_1_joint" />
+    <jointactuatorfrc name="R_ring_1_joint_torque" joint="R_ring_1_joint" />
+    <jointactuatorfrc name="R_pinky_1_joint_torque" joint="R_pinky_1_joint" />
+  </sensor>
+</mujoco>

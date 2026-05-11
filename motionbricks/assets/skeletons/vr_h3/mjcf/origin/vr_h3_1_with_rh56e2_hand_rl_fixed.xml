@@ -1,0 +1,615 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="vr_h3_1">
+  <compiler angle="radian" meshdir="../../meshes/" />
+  <default>
+    <default class="vr_h3_1_visual">
+      <geom contype="0" conaffinity="0" group="2" density="0" rgba="0.752941 0.752941 0.752941 1" />
+    </default>
+    <default class="vr_h3_1_collision">
+      <geom group="3" rgba="0.9 0.9 0 1" />
+    </default>
+    <default class="RH56E2_hand">
+      <joint armature="0.001" damping="0.01" />
+    </default>
+    <default class="RH56E2_hand_visual">
+      <geom contype="0" conaffinity="0" group="2" />
+    </default>
+    <default class="RH56E2_hand_collision">
+      <geom group="3" rgba="0.9 0.9 0 1" />
+    </default>
+  </default>
+  <asset>
+    <mesh name="pelvis" content_type="model/stl" file="pelvis.stl" />
+    <mesh name="right_hip_pitch_link" content_type="model/stl" file="right_hip_pitch_link.stl" />
+    <mesh name="right_hip_roll_link" content_type="model/stl" file="right_hip_roll_link.stl" />
+    <mesh name="right_hip_yaw_link" content_type="model/stl" file="right_hip_yaw_link.stl" />
+    <mesh name="right_knee_pitch_link" content_type="model/stl" file="right_knee_pitch_link.stl" />
+    <mesh name="right_ankle_pitch_link" content_type="model/stl" file="right_ankle_pitch_link.stl" />
+    <mesh name="right_ankle_roll_link" content_type="model/stl" file="right_ankle_roll_link.stl" />
+    <mesh name="left_hip_pitch_link" content_type="model/stl" file="left_hip_pitch_link.stl" />
+    <mesh name="left_hip_roll_link" content_type="model/stl" file="left_hip_roll_link.stl" />
+    <mesh name="left_hip_yaw_link" content_type="model/stl" file="left_hip_yaw_link.stl" />
+    <mesh name="left_knee_pitch_link" content_type="model/stl" file="left_knee_pitch_link.stl" />
+    <mesh name="left_ankle_pitch_link" content_type="model/stl" file="left_ankle_pitch_link.stl" />
+    <mesh name="left_ankle_roll_link" content_type="model/stl" file="left_ankle_roll_link.stl" />
+    <mesh name="waist_yaw_link" content_type="model/stl" file="waist_yaw_link.stl" />
+    <mesh name="waist_roll_link" content_type="model/stl" file="waist_roll_link.stl" />
+    <mesh name="right_shoulder_pitch_link" content_type="model/stl" file="right_shoulder_pitch_link.stl" />
+    <mesh name="right_shoulder_roll_link" content_type="model/stl" file="right_shoulder_roll_link.stl" />
+    <mesh name="right_shoulder_yaw_link" content_type="model/stl" file="right_shoulder_yaw_link.stl" />
+    <mesh name="right_elbow_pitch_link" content_type="model/stl" file="right_elbow_pitch_link.stl" />
+    <mesh name="right_wrist_yaw_link" content_type="model/stl" file="right_wrist_yaw_link.stl" />
+    <mesh name="right_wrist_roll_link" content_type="model/stl" file="right_wrist_roll_link.stl" />
+    <mesh name="right_wrist_pitch_link" content_type="model/stl" file="right_wrist_pitch_link.stl" />
+    <mesh name="left_shoulder_pitch_link" content_type="model/stl" file="left_shoulder_pitch_link.stl" />
+    <mesh name="left_shoulder_roll_link" content_type="model/stl" file="left_shoulder_roll_link.stl" />
+    <mesh name="left_shoulder_yaw_link" content_type="model/stl" file="left_shoulder_yaw_link.stl" />
+    <mesh name="left_elbow_pitch_link" content_type="model/stl" file="left_elbow_pitch_link.stl" />
+    <mesh name="left_wrist_yaw_link" content_type="model/stl" file="left_wrist_yaw_link.stl" />
+    <mesh name="left_wrist_roll_link" content_type="model/stl" file="left_wrist_roll_link.stl" />
+    <mesh name="left_wrist_pitch_link" content_type="model/stl" file="left_wrist_pitch_link.stl" />
+    <mesh name="head_yaw_link" content_type="model/stl" file="head_yaw_link.stl" />
+    <mesh name="head_pitch_link" content_type="model/stl" file="head_pitch_link.stl" />
+    <mesh name="left_base_link" content_type="model/stl" file="left_base_link.stl" />
+    <mesh name="left_thumb_1" content_type="model/stl" file="left_thumb_1.stl" />
+    <mesh name="left_thumb_2" content_type="model/stl" file="left_thumb_2.stl" />
+    <mesh name="left_thumb_3" content_type="model/stl" file="left_thumb_3.stl" />
+    <mesh name="left_thumb_force_sensor_2" content_type="model/stl" file="left_thumb_force_sensor_2.stl" />
+    <mesh name="left_thumb_4" content_type="model/stl" file="left_thumb_4.stl" />
+    <mesh name="left_thumb_force_sensor_3" content_type="model/stl" file="left_thumb_force_sensor_3.stl" />
+    <mesh name="left_thumb_force_sensor_4" content_type="model/stl" file="left_thumb_force_sensor_4.stl" />
+    <mesh name="left_thumb_force_sensor_1" content_type="model/stl" file="left_thumb_force_sensor_1.stl" />
+    <mesh name="left_index_1" content_type="model/stl" file="left_index_1.stl" />
+    <mesh name="left_index_2" content_type="model/stl" file="left_index_2.stl" />
+    <mesh name="left_index_force_sensor_2" content_type="model/stl" file="left_index_force_sensor_2.stl" />
+    <mesh name="left_index_force_sensor_3" content_type="model/stl" file="left_index_force_sensor_3.stl" />
+    <mesh name="left_index_force_sensor_1" content_type="model/stl" file="left_index_force_sensor_1.stl" />
+    <mesh name="left_middle_1" content_type="model/stl" file="left_middle_1.stl" />
+    <mesh name="left_middle_2" content_type="model/stl" file="left_middle_2.stl" />
+    <mesh name="left_middle_force_sensor_2" content_type="model/stl" file="left_middle_force_sensor_2.stl" />
+    <mesh name="left_middle_force_sensor_3" content_type="model/stl" file="left_middle_force_sensor_3.stl" />
+    <mesh name="left_middle_force_sensor_1" content_type="model/stl" file="left_middle_force_sensor_1.stl" />
+    <mesh name="left_ring_1" content_type="model/stl" file="left_ring_1.stl" />
+    <mesh name="left_ring_2" content_type="model/stl" file="left_ring_2.stl" />
+    <mesh name="left_ring_force_sensor_2" content_type="model/stl" file="left_ring_force_sensor_2.stl" />
+    <mesh name="left_ring_force_sensor_3" content_type="model/stl" file="left_ring_force_sensor_3.stl" />
+    <mesh name="left_ring_force_sensor_1" content_type="model/stl" file="left_ring_force_sensor_1.stl" />
+    <mesh name="left_little_1" content_type="model/stl" file="left_little_1.stl" />
+    <mesh name="left_little_2" content_type="model/stl" file="left_little_2.stl" />
+    <mesh name="left_little_force_sensor_2" content_type="model/stl" file="left_little_force_sensor_2.stl" />
+    <mesh name="left_little_force_sensor_3" content_type="model/stl" file="left_little_force_sensor_3.stl" />
+    <mesh name="left_little_force_sensor_1" content_type="model/stl" file="left_little_force_sensor_1.stl" />
+    <mesh name="left_palm_1" content_type="model/stl" file="left_palm_1.stl" />
+    <mesh name="left_palm_2" content_type="model/stl" file="left_palm_2.stl" />
+    <mesh name="left_palm_force_sensor" content_type="model/stl" file="left_palm_force_sensor.stl" />
+    <mesh name="right_base_link" content_type="model/stl" file="right_base_link.stl" />
+    <mesh name="right_palm_1" content_type="model/stl" file="right_palm_1.stl" />
+    <mesh name="right_palm_2" content_type="model/stl" file="right_palm_2.stl" />
+    <mesh name="right_palm_force_sensor" content_type="model/stl" file="right_palm_force_sensor.stl" />
+    <mesh name="right_thumb_1" content_type="model/stl" file="right_thumb_1.stl" />
+    <mesh name="right_thumb_2" content_type="model/stl" file="right_thumb_2.stl" />
+    <mesh name="right_thumb_3" content_type="model/stl" file="right_thumb_3.stl" />
+    <mesh name="right_thumb_force_sensor_2" content_type="model/stl" file="right_thumb_force_sensor_2.stl" />
+    <mesh name="right_thumb_4" content_type="model/stl" file="right_thumb_4.stl" />
+    <mesh name="right_thumb_force_sensor_3" content_type="model/stl" file="right_thumb_force_sensor_3.stl" />
+    <mesh name="right_thumb_force_sensor_4" content_type="model/stl" file="right_thumb_force_sensor_4.stl" />
+    <mesh name="right_thumb_force_sensor_1" content_type="model/stl" file="right_thumb_force_sensor_1.stl" />
+    <mesh name="right_index_1" content_type="model/stl" file="right_index_1.stl" />
+    <mesh name="right_index_2" content_type="model/stl" file="right_index_2.stl" />
+    <mesh name="right_index_force_sensor_2" content_type="model/stl" file="right_index_force_sensor_2.stl" />
+    <mesh name="right_index_force_sensor_3" content_type="model/stl" file="right_index_force_sensor_3.stl" />
+    <mesh name="right_index_force_sensor_1" content_type="model/stl" file="right_index_force_sensor_1.stl" />
+    <mesh name="right_middle_1" content_type="model/stl" file="right_middle_1.stl" />
+    <mesh name="right_middle_2" content_type="model/stl" file="right_middle_2.stl" />
+    <mesh name="right_middle_force_sensor_2" content_type="model/stl" file="right_middle_force_sensor_2.stl" />
+    <mesh name="right_middle_force_sensor_3" content_type="model/stl" file="right_middle_force_sensor_3.stl" />
+    <mesh name="right_middle_force_sensor_1" content_type="model/stl" file="right_middle_force_sensor_1.stl" />
+    <mesh name="right_ring_1" content_type="model/stl" file="right_ring_1.stl" />
+    <mesh name="right_ring_2" content_type="model/stl" file="right_ring_2.stl" />
+    <mesh name="right_ring_force_sensor_2" content_type="model/stl" file="right_ring_force_sensor_2.stl" />
+    <mesh name="right_ring_force_sensor_3" content_type="model/stl" file="right_ring_force_sensor_3.stl" />
+    <mesh name="right_ring_force_sensor_1" content_type="model/stl" file="right_ring_force_sensor_1.stl" />
+    <mesh name="right_little_1" content_type="model/stl" file="right_little_1.stl" />
+    <mesh name="right_little_2" content_type="model/stl" file="right_little_2.stl" />
+    <mesh name="right_little_force_sensor_2" content_type="model/stl" file="right_little_force_sensor_2.stl" />
+    <mesh name="right_little_force_sensor_3" content_type="model/stl" file="right_little_force_sensor_3.stl" />
+    <mesh name="right_little_force_sensor_1" content_type="model/stl" file="right_little_force_sensor_1.stl" />
+  </asset>
+  <worldbody>
+    <body name="pelvis">
+      <inertial pos="0.000623 0 0.028522" quat="0.707025 0.707025 -0.01077 0.01077" mass="2.67804" diaginertia="0.00984455 0.00816945 0.006783" />
+      <joint name="base_joint" type="free" />
+      <geom name="pelvis_visual_0" class="vr_h3_1_visual" type="mesh" mesh="pelvis" />
+      <geom name="pelvis_collision_1" class="vr_h3_1_collision" size="0.055 0.025" pos="0 0 0.025" type="capsule" />
+      <site name="imu" pos="-0.00614 0 -0.02485" size="0.01" />
+      <body name="left_hip_pitch_link" pos="0 0.13345 0">
+        <inertial pos="-0.001517 -0.00801 0.000128" quat="0.525628 0.457659 0.471853 0.540017" mass="3.37865" diaginertia="0.00646332 0.00539515 0.00484453" />
+        <joint name="left_hip_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-1.571 0.7" actuatorfrclimited="true" actuatorfrcrange="-369 369" />
+        <geom name="left_hip_pitch_link_visual_0" class="vr_h3_1_visual" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="left_hip_pitch_link" />
+        <body name="left_hip_roll_link">
+          <inertial pos="-0.053729 0.000197 -0.054841" quat="0.664764 -0.240511 0.240977 -0.664962" mass="5.32548" diaginertia="0.045882 0.0425947 0.0111623" />
+          <joint name="left_hip_roll_joint" pos="0 0 0" axis="1 0 0" limited="true" range="-0.175 1.05" actuatorfrclimited="true" actuatorfrcrange="-369 369" />
+          <geom name="left_hip_roll_link_visual_0" class="vr_h3_1_visual" quat="0.5 -0.5 0.5 -0.5" type="mesh" mesh="left_hip_roll_link" />
+          <geom name="left_hip_roll_link_collision_1" class="vr_h3_1_collision" size="0.075 0.04" pos="0.01 0 -0.04" quat="0.707107 0 0 -0.707107" type="capsule" />
+          <geom name="left_hip_roll_link_collision_2" class="vr_h3_1_collision" size="0.075 0.03" pos="-0.085 0 -0.03" quat="0.707107 0 0 -0.707107" type="capsule" />
+          <body name="left_hip_yaw_link" pos="0 0 -0.353">
+            <inertial pos="0.001183 0.005942 0.025176" quat="0.717999 -0.009827 -0.023802 -0.695567" mass="4.12325" diaginertia="0.0183791 0.0172375 0.00628636" />
+            <joint name="left_hip_yaw_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-0.785 0.785" actuatorfrclimited="true" actuatorfrcrange="-191 191" />
+            <geom name="left_hip_yaw_link_visual_0" class="vr_h3_1_visual" quat="0 0 0 -1" type="mesh" mesh="left_hip_yaw_link" />
+            <geom name="left_hip_yaw_link_collision_1" class="vr_h3_1_collision" size="0.045 0.005" pos="-0.02 -0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <geom name="left_hip_yaw_link_collision_2" class="vr_h3_1_collision" size="0.045 0.005" pos="-0.02 0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <geom name="left_hip_yaw_link_collision_3" class="vr_h3_1_collision" size="0.045 0.005" pos="0.02 -0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <geom name="left_hip_yaw_link_collision_4" class="vr_h3_1_collision" size="0.045 0.005" pos="0.02 0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <body name="left_knee_pitch_link">
+              <inertial pos="-0.009194 0.000754 -0.171789" quat="0.004557 0.028137 -0.99959 -0.002866" mass="4.51769" diaginertia="0.0529356 0.0520676 0.00813784" />
+              <joint name="left_knee_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.17 2.09" actuatorfrclimited="true" actuatorfrcrange="-369 369" />
+              <geom name="left_knee_pitch_link_visual_0" class="vr_h3_1_visual" pos="0 0 0" quat="-0.5 0.5 -0.5 -0.5" type="mesh" mesh="left_knee_pitch_link" />
+              <geom name="left_knee_pitch_link_collision_1" class="vr_h3_1_collision" size="0.06 0.16" pos="0 0 -0.16" quat="0 0.707107 -0.707107 0" type="capsule" />
+              <body name="left_ankle_pitch_link" pos="0 0 -0.434">
+                <inertial pos="-0.000323 -0.000002 -0.007617" quat="-0.5 0.5 -0.5 -0.5" mass="0.08624" diaginertia="0.000013 0.000016 0.000018" />
+                <joint name="left_ankle_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.87 0.52" actuatorfrclimited="true" actuatorfrcrange="-140 140" />
+                <geom name="left_ankle_pitch_link_visual_0" class="vr_h3_1_visual" quat="-0.5 0.5 -0.5 -0.5" type="mesh" mesh="left_ankle_pitch_link" />
+                <body name="left_ankle_roll_link" pos="0 0 -0.014">
+                  <inertial pos="0.052794 -0.000642 -0.017002" quat="-0.71981 0.012971 -0.694019 -0.006647" mass="1.15615" diaginertia="0.00591041 0.00539331 0.00109328" />
+                  <joint name="left_ankle_roll_joint" pos="0 0 0" axis="1 0 0" limited="true" range="-0.26 0.26" actuatorfrclimited="true" actuatorfrcrange="-140 140" />
+                  <geom name="left_ankle_roll_link_visual_0" class="vr_h3_1_visual" quat="-0.707107 0 -0.707107 0" type="mesh" mesh="left_ankle_roll_link" />
+                  <geom name="left_ankle_roll_link_collision_1" class="vr_h3_1_collision" size="0.015 0.05" pos="0.065 -0.015 0.01" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_2" class="vr_h3_1_collision" size="0.015 0.05" pos="0.065 0.015 0.01" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_3" class="vr_h3_1_collision" size="0.02 0.105" pos="0.065 -0.02 -0.015237" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_4" class="vr_h3_1_collision" size="0.02 0.105" pos="0.065 0.02 -0.015237" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_5" class="vr_h3_1_collision" size="0.015 0.028" pos="-0.035 0 0.01" quat="-0.5 -0.5 -0.5 0.5" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_6" class="vr_h3_1_collision" size="0.005 0.13" pos="0.067 -0.005 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_7" class="vr_h3_1_collision" size="0.005 0.128" pos="0.067 -0.015 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_8" class="vr_h3_1_collision" size="0.005 0.122" pos="0.067 -0.025 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_9" class="vr_h3_1_collision" size="0.005 0.112" pos="0.067 -0.035 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_10" class="vr_h3_1_collision" size="0.005 0.095" pos="0.067 -0.045 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_11" class="vr_h3_1_collision" size="0.005 0.13" pos="0.067 0.005 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_12" class="vr_h3_1_collision" size="0.005 0.125" pos="0.065 0.015 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_13" class="vr_h3_1_collision" size="0.005 0.118" pos="0.062 0.025 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_14" class="vr_h3_1_collision" size="0.005 0.105" pos="0.057 0.035 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="left_ankle_roll_link_collision_15" class="vr_h3_1_collision" size="0.005 0.08" pos="0.047 0.045 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="right_hip_pitch_link" pos="0 -0.13345 0">
+        <inertial pos="-0.001528 0.00801 0.000147" quat="0.540829 0.47133 0.458288 0.524713" mass="3.37864" diaginertia="0.00646238 0.00539513 0.00484449" />
+        <joint name="right_hip_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-1.571 0.7" actuatorfrclimited="true" actuatorfrcrange="-369 369" />
+        <geom name="right_hip_pitch_link_visual_0" class="vr_h3_1_visual" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="right_hip_pitch_link" />
+        <body name="right_hip_roll_link">
+          <inertial pos="-0.053693 -0.000184 -0.054831" quat="0.665683 -0.240921 0.241005 -0.663883" mass="5.32547" diaginertia="0.045928 0.0426225 0.0111814" />
+          <joint name="right_hip_roll_joint" pos="0 0 0" axis="1 0 0" limited="true" range="-1.05 0.17" actuatorfrclimited="true" actuatorfrcrange="-369 369" />
+          <geom name="right_hip_roll_link_visual_0" class="vr_h3_1_visual" quat="0.5 -0.5 0.5 -0.5" type="mesh" mesh="right_hip_roll_link" />
+          <geom name="right_hip_roll_link_collision_1" class="vr_h3_1_collision" size="0.075 0.04" pos="0.01 0 -0.04" quat="0.707107 0 0 -0.707107" type="capsule" />
+          <geom name="right_hip_roll_link_collision_2" class="vr_h3_1_collision" size="0.075 0.03" pos="-0.085 0 -0.03" quat="0.707107 0 0 -0.707107" type="capsule" />
+          <body name="right_hip_yaw_link" pos="0 0 -0.353">
+            <inertial pos="0.001177 -0.005942 0.02516" quat="0.695623 0.023672 0.009762 -0.717951" mass="4.12343" diaginertia="0.0183878 0.0172445 0.0062887" />
+            <joint name="right_hip_yaw_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-0.785 0.785" actuatorfrclimited="true" actuatorfrcrange="-191 191" />
+            <geom name="right_hip_yaw_link_visual_0" class="vr_h3_1_visual" quat="0 0 0 -1" type="mesh" mesh="right_hip_yaw_link" />
+            <geom name="right_hip_yaw_link_collision_1" class="vr_h3_1_collision" size="0.045 0.005" pos="-0.02 -0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <geom name="right_hip_yaw_link_collision_2" class="vr_h3_1_collision" size="0.045 0.005" pos="-0.02 0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <geom name="right_hip_yaw_link_collision_3" class="vr_h3_1_collision" size="0.045 0.005" pos="0.02 -0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <geom name="right_hip_yaw_link_collision_4" class="vr_h3_1_collision" size="0.045 0.005" pos="0.02 0.02 0.14" quat="0 0 0 -1" type="capsule" />
+            <body name="right_knee_pitch_link">
+              <inertial pos="-0.009302 -0.000772 -0.173133" quat="0.005268 -0.028367 -0.99958 0.002639" mass="4.51562" diaginertia="0.054515 0.0536574 0.00813559" />
+              <joint name="right_knee_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.17 2.09" actuatorfrclimited="true" actuatorfrcrange="-369 369" />
+              <geom name="right_knee_pitch_link_visual_0" class="vr_h3_1_visual" pos="0 0 0" quat="-0.5 0.5 -0.5 -0.5" type="mesh" mesh="right_knee_pitch_link" />
+              <geom name="right_knee_pitch_link_collision_1" class="vr_h3_1_collision" size="0.06 0.16" pos="0 0 -0.16" quat="0 0.707107 -0.707107 0" type="capsule" />
+              <body name="right_ankle_pitch_link" pos="0 0 -0.434">
+                <inertial pos="-0.000323 -0.000002 -0.007617" quat="-0.5 0.5 -0.5 -0.5" mass="0.08624" diaginertia="0.000013 0.000016 0.000018" />
+                <joint name="right_ankle_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.87 0.52" actuatorfrclimited="true" actuatorfrcrange="-140 140" />
+                <geom name="right_ankle_pitch_link_visual_0" class="vr_h3_1_visual" quat="-0.5 0.5 -0.5 -0.5" type="mesh" mesh="right_ankle_pitch_link" />
+                <body name="right_ankle_roll_link" pos="0 0 -0.014">
+                  <inertial pos="0.052784 0.000643 -0.017001" quat="-0.719804 -0.012966 -0.694024 0.006643" mass="1.15646" diaginertia="0.0059124 0.00539531 0.00109329" />
+                  <joint name="right_ankle_roll_joint" pos="0 0 0" axis="1 0 0" limited="true" range="-0.26 0.26" actuatorfrclimited="true" actuatorfrcrange="-140 140" />
+                  <geom name="right_ankle_roll_link_visual_0" class="vr_h3_1_visual" quat="-0.707107 0 -0.707107 0" type="mesh" mesh="right_ankle_roll_link" />
+                  <geom name="right_ankle_roll_link_collision_1" class="vr_h3_1_collision" size="0.015 0.05" pos="0.065 -0.015 0.01" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_2" class="vr_h3_1_collision" size="0.015 0.05" pos="0.065 0.015 0.01" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_3" class="vr_h3_1_collision" size="0.02 0.105" pos="0.065 -0.02 -0.015237" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_4" class="vr_h3_1_collision" size="0.02 0.105" pos="0.065 0.02 -0.015237" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_5" class="vr_h3_1_collision" size="0.015 0.028" pos="0.035 0 0.01" quat="-0.5 -0.5 -0.5 0.5" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_6" class="vr_h3_1_collision" size="0.005 0.13" pos="0.067 0.005 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_7" class="vr_h3_1_collision" size="0.005 0.128" pos="0.067 0.015 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_8" class="vr_h3_1_collision" size="0.005 0.122" pos="0.067 0.025 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_9" class="vr_h3_1_collision" size="0.005 0.112" pos="0.067 0.035 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_10" class="vr_h3_1_collision" size="0.005 0.095" pos="0.067 0.045 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_11" class="vr_h3_1_collision" size="0.005 0.13" pos="0.067 -0.005 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_12" class="vr_h3_1_collision" size="0.005 0.125" pos="0.065 -0.015 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_13" class="vr_h3_1_collision" size="0.005 0.118" pos="0.062 -0.025 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_14" class="vr_h3_1_collision" size="0.005 0.105" pos="0.057 -0.035 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                  <geom name="right_ankle_roll_link_collision_15" class="vr_h3_1_collision" size="0.005 0.08" pos="0.047 -0.045 -0.0352" quat="-0.707107 0 -0.707107 0" type="capsule" />
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="waist_yaw_link" pos="0 0 0.1415">
+        <inertial pos="-0.00696 0 -0.005692" quat="0 -0.076242 0 0.997089" mass="1.31807" diaginertia="0.00192654 0.001754 0.00160046" />
+        <joint name="waist_yaw_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.62 2.62" actuatorfrclimited="true" actuatorfrcrange="-102 102" />
+        <geom name="waist_yaw_link_visual_0" class="vr_h3_1_visual" quat="0.707107 0 0 0.707107" type="mesh" mesh="waist_yaw_link" />
+        <body name="waist_roll_link" pos="-0.00026 0 0">
+          <inertial pos="-0.032447 -0.000808 0.24901" quat="-0.998101 0.025173 0.055013 0.011609" mass="21.8453" diaginertia="0.462232 0.389264 0.211522" />
+          <joint name="waist_roll_joint" pos="0 0 0" axis="1 0 0" limited="true" range="-0.262 0.262" actuatorfrclimited="true" actuatorfrcrange="-102 102" />
+          <geom name="waist_roll_link_visual_0" class="vr_h3_1_visual" pos="0 0 0" quat="0 0.707107 0 0.707107" type="mesh" mesh="waist_roll_link" />
+          <geom name="waist_roll_link_collision_1" class="vr_h3_1_collision" size="0.125 0.12" pos="0 0.03 0.22" quat="0 0 0 1" type="capsule" />
+          <geom name="waist_roll_link_collision_2" class="vr_h3_1_collision" size="0.125 0.12" pos="0 -0.03 0.22" quat="0 0 0 1" type="capsule" />
+          <body name="left_shoulder_pitch_link" pos="0 0.207501 0.377034">
+            <inertial pos="-0.004731 -0.002178 -0.000015" quat="-0.24229 0.061218 0.657799 0.710527" mass="1.01739" diaginertia="0.00099763 0.000971356 0.000888014" />
+            <joint name="left_shoulder_pitch_joint" pos="0 0 0" axis="0 0.996195 0.087157" limited="true" range="-3.14 1.047" actuatorfrclimited="true" actuatorfrcrange="-66 66" />
+            <geom name="left_shoulder_pitch_link_visual_0" class="vr_h3_1_visual" quat="0.521334 -0.477714 0.477714 0.521334" type="mesh" mesh="left_shoulder_pitch_link" />
+            <body name="left_shoulder_roll_link" pos="-0.009 0 0">
+              <inertial pos="0.000464 0.000048 -0.098266" quat="-0.706894 -0.005221 0.001763 0.707298" mass="1.19875" diaginertia="0.00274203 0.00262613 0.00130984" />
+              <joint name="left_shoulder_roll_joint" pos="0 0 0" axis="1 0 0" limited="true" range="0 2.356" actuatorfrclimited="true" actuatorfrcrange="-66 66" />
+              <geom name="left_shoulder_roll_link_visual_0" class="vr_h3_1_visual" pos="0 0 0" quat="-0.5 0.5 -0.5 0.5" type="mesh" mesh="left_shoulder_roll_link" />
+              <geom name="left_shoulder_roll_link_collision_1" class="vr_h3_1_collision" size="0.045 0.035" pos="0 0 -0.07" quat="-0.707107 0 0 0.707107" type="capsule" />
+              <body name="left_shoulder_yaw_link" pos="0 0 -0.25">
+                <inertial pos="-0.004988 -0.014813 0.055091" quat="-0.773976 -0.167658 -0.129674 0.596689" mass="0.297437" diaginertia="0.000657496 0.000630237 0.000255267" />
+                <joint name="left_shoulder_yaw_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.967 2.967" actuatorfrclimited="true" actuatorfrcrange="-34 34" />
+                <geom name="left_shoulder_yaw_link_visual_0" class="vr_h3_1_visual" quat="0 0 0 1" type="mesh" mesh="left_shoulder_yaw_link" />
+                <geom name="left_shoulder_yaw_link_collision_1" class="vr_h3_1_collision" size="0.03 0.03" pos="0 0 0.03" quat="0 0 0 1" type="capsule" />
+                <body name="left_elbow_pitch_link">
+                  <inertial pos="0.044075 0.00163 -0.000062" quat="-0.488458 0.49632 0.504164 -0.510779" mass="1.59951" diaginertia="0.00528663 0.00522599 0.00130737" />
+                  <joint name="left_elbow_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.524 1.57" actuatorfrclimited="true" actuatorfrcrange="-34 34" />
+                  <geom name="left_elbow_pitch_link_visual_0" class="vr_h3_1_visual" pos="0 0 0" quat="-0.5 0.5 0.5 0.5" type="mesh" mesh="left_elbow_pitch_link" />
+                  <geom name="left_elbow_pitch_link_collision_1" class="vr_h3_1_collision" size="0.045 0.04" pos="0.128 0 0" quat="-0.707107 0 0.707107 0" type="capsule" />
+                  <body name="left_wrist_yaw_link" pos="0.247 0 0">
+                    <inertial pos="-0.062755 0.000001 -0.001511" quat="-0.491957 0.507916 0.507916 -0.491957" mass="0.634027" diaginertia="0.000966 0.000794224 0.000574776" />
+                    <joint name="left_wrist_yaw_joint" pos="0 0 0" axis="-1 0 0" limited="true" range="-2.967 2.967" actuatorfrclimited="true" actuatorfrcrange="-11 11" />
+                    <geom name="left_wrist_yaw_link_visual_0" class="vr_h3_1_visual" quat="-0.5 0.5 0.5 -0.5" type="mesh" mesh="left_wrist_yaw_link" />
+                    <body name="left_wrist_roll_link">
+                      <inertial pos="0.009816 0.002192 -0.000004" quat="-0.713833 -0.700263 0.005083 0.006909" mass="0.408402" diaginertia="0.000249017 0.000242019 0.000189964" />
+                      <joint name="left_wrist_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-1.133 0.698" actuatorfrclimited="true" actuatorfrcrange="-11 11" />
+                      <geom name="left_wrist_roll_link_visual_0" class="vr_h3_1_visual" quat="-1 0 0 0" type="mesh" mesh="left_wrist_roll_link" />
+                      <geom name="left_wrist_roll_link_collision_1" class="vr_h3_1_collision" size="0.03 0.01" pos="0.01 0 0" quat="-0.707107 -0.707107 0 0" type="capsule" />
+                      <body name="left_wrist_pitch_link" pos="0.01 0 0">
+                        <inertial pos="0.033152 0.017465 0.000009" quat="-0.660516 0.660516 -0.252424 0.252424" mass="0.141805" diaginertia="0.000113222 0.000103 0.0000407785" />
+                        <joint name="left_wrist_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.96 0.96" actuatorfrclimited="true" actuatorfrcrange="-11 11" />
+                        <geom name="left_wrist_pitch_link_visual_0" class="vr_h3_1_visual" quat="-0.707107 0.707107 0 0" type="mesh" mesh="left_wrist_pitch_link" />
+                        <geom name="left_wrist_pitch_link_collision_1" class="vr_h3_1_collision" size="0.002399 0.033058 0.025221" pos="0.04441 0.005139 0" quat="-0.707107 0.707107 0 0" type="box" />
+                        <geom name="left_wrist_pitch_link_collision_2" class="vr_h3_1_collision" size="0.023399 0.022016 0.004221" pos="0.01 0.038911 0" quat="-0.707107 0.707107 0 0" type="box" />
+                        <body name="left_hand" childclass="RH56E2_hand" pos="0.0535 0 0">
+                          <inertial pos="0.018823 -0.000585 0" quat="0 0 1 0" mass="0.09" diaginertia="0.000036489 0.000027868 0.00002678" />
+                          <geom name="left_hand_visual_0" class="RH56E2_hand_visual" quat="-0.5 -0.5 0.5 0.5" type="mesh" rgba="1 1 1 1" mesh="left_base_link" />
+                          <geom name="left_hand_collision_1" class="RH56E2_hand_collision" size="0.025 0.015" pos="0.015 0 0" quat="-0.5 -0.5 0.5 0.5" type="cylinder" />
+                          <body name="left_palm_1" pos="0.031 0 0">
+                            <inertial pos="0.0689 0.00625 0.00223" quat="0.513057 -0.530966 0.495858 -0.457136" mass="0.38382" diaginertia="0.000551949 0.000400831 0.000221933" />
+                            <geom name="left_palm_1_visual_0" class="RH56E2_hand_visual" quat="0.5 -0.5 0.5 -0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_palm_1" />
+                            <geom name="left_palm_1_collision_1" class="RH56E2_hand_collision" size="0.013 0.042 0.05" pos="0.059 0.0032 0" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                            <geom name="left_palm_1_collision_2" class="RH56E2_hand_collision" size="0.007 0.026 0.015" pos="0.045 -0.0168 -0.012" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                            <geom name="left_palm_1_collision_3" class="RH56E2_hand_collision" size="0.007 0.021 0.01" pos="0.02 -0.0168 -0.007" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                            <geom name="left_palm_1_collision_4" class="RH56E2_hand_collision" size="0.007 0.011 0.01" pos="0.0279 -0.0168 0.025" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                            <geom name="left_palm_1_collision_5" class="RH56E2_hand_collision" size="0.004 0.005 0.008" pos="0.02799 -0.02651 0.0265" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                            <body name="left_palm_2">
+                              <inertial pos="0.083583 0.028228 0.000242" quat="0.461471 -0.533549 0.536598 -0.463068" mass="0.0205047" diaginertia="0.000023767 0.000012797 0.000012022" />
+                              <geom name="left_palm_2_visual_0" class="RH56E2_hand_visual" quat="0.5 -0.5 0.5 -0.5" type="mesh" rgba="1 1 1 1" mesh="left_palm_2" />
+                              <geom name="left_palm_2_collision_1" class="RH56E2_hand_collision" size="0.009 0.04 0.023" pos="0.084 0.024 0" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                              <geom name="left_palm_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.026 0.014" pos="0.047 0.023 0" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                              <geom name="left_palm_2_collision_3" class="RH56E2_hand_collision" size="0.007 0.006 0.01" pos="0.051 0.022 -0.032" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                              <geom name="left_palm_2_collision_4" class="RH56E2_hand_collision" size="0.007 0.006 0.01" pos="0.051 0.022 0.032" quat="0.5 -0.5 0.5 -0.5" type="box" />
+                            </body>
+                            <body name="left_palm_force_sensor" pos="0.089101 -0.012296 0.000368">
+                              <geom name="left_palm_force_sensor_visual_0" class="RH56E2_hand_visual" quat="0.5 0.5 0.5 -0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_palm_force_sensor" />
+                            </body>
+                          </body>
+                          <body name="left_thumb_1" pos="0.0826 -0.02101 0.0269">
+                            <inertial pos="-0.00671 -0.00067 0.00494" quat="0.713139 0.007448 0.128266 -0.689149" mass="0.01537" diaginertia="0.000000991 0.00000087 0.000000655" />
+                            <geom name="left_thumb_1_visual_0" class="RH56E2_hand_visual" quat="0.5 -0.5 0.5 -0.5" type="mesh" rgba="1 1 1 1" mesh="left_thumb_1" />
+                            <body name="left_thumb_2" pos="-0.0076 -0.013438 0.012862">
+                              <inertial pos="0.01346 0.00542 0.03301" quat="0.09896 0.7568 -0.600123 -0.239399" mass="0.11034" diaginertia="0.000043147 0.000039737 0.000013095" />
+                              <geom name="left_thumb_2_visual_0" class="RH56E2_hand_visual" pos="0 0 0" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_thumb_2" />
+                              <geom name="left_thumb_2_collision_1" class="RH56E2_hand_collision" size="0.0125 0.031" pos="0.006548 0.006 0.032312" quat="0.703624 -0.07396 0.182903 -0.682635" type="cylinder" />
+                              <geom name="left_thumb_2_collision_2" class="RH56E2_hand_collision" size="0.0125 0.026" pos="0.022493 0.006 0.031516" quat="0.703624 -0.07396 0.182903 -0.682635" type="cylinder" />
+                              <body name="left_thumb_3" pos="0.032799 -0.009337 0.052954">
+                                <inertial pos="0.00155 0.01153 0.01108" quat="0.414598 0.516107 -0.685836 -0.302277" mass="0.01779" diaginertia="0.00000333 0.000003301 0.000002365" />
+                                <geom name="left_thumb_3_visual_0" class="RH56E2_hand_visual" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_thumb_3" />
+                                <geom name="left_thumb_3_collision_1" class="RH56E2_hand_collision" size="0.013 0.005" pos="0.001955 0.009419 0.01373" quat="0.703624 -0.07396 0.182903 -0.682635" type="cylinder" />
+                                <body name="left_thumb_force_sensor_2" pos="0.016443 0.00982 0.008028">
+                                  <geom name="left_thumb_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="0.391174 -0.59197 0.643314 -0.287578" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_thumb_force_sensor_2" />
+                                </body>
+                                <body name="left_thumb_4" pos="0.013373 -0.002273 0.01865">
+                                  <inertial pos="0.00773 0.0105 0.01264" quat="0.609327 -0.000562 -0.792918 0.00049" mass="0.00766" diaginertia="0.000001197 0.000001159 0.000000531" />
+                                  <geom name="left_thumb_4_visual_0" class="RH56E2_hand_visual" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_thumb_4" />
+                                  <geom name="left_thumb_4_collision_1" class="RH56E2_hand_collision" size="0.011 0.005" pos="0.013364 0.008034 0.014144" quat="0.667164 -0.234291 0.335774 -0.622299" type="capsule" />
+                                  <body name="left_thumb_force_sensor_3" pos="0.020486 0.008809 0.007635">
+                                    <geom name="left_thumb_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.280341 0.649154 -0.687977 0.163385" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_thumb_force_sensor_3" />
+                                  </body>
+                                  <body name="left_thumb_force_sensor_4" pos="0.027914 0.006835 0.018831">
+                                    <geom name="left_thumb_force_sensor_4_visual_0" class="RH56E2_hand_visual" quat="-0.580238 0.403973 -0.498754 0.501373" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_thumb_force_sensor_4" />
+                                  </body>
+                                </body>
+                              </body>
+                              <body name="left_thumb_force_sensor_1" pos="0.033251 0.007008 0.023412">
+                                <geom name="left_thumb_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="0.429442 -0.562018 0.627259 -0.32598" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_thumb_force_sensor_1" />
+                              </body>
+                            </body>
+                          </body>
+                          <body name="left_index_1" pos="0.1564 -0.000565 0.038679">
+                            <inertial pos="0.011054 -0.00132 -0.007669" quat="-0.717037 -0.064339 -0.691974 0.053752" mass="0.01869" diaginertia="0.000003797 0.00000367 0.000001136" />
+                            <geom name="left_index_1_visual_0" class="RH56E2_hand_visual" quat="-0.706999 -0.012337 0.012337 0.706999" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_index_1" />
+                            <geom name="left_index_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.010866 -0.001434 -0.006625" quat="-0.4912 -0.508647 0.508647 0.4912" type="cylinder" />
+                            <body name="left_index_2" pos="0.032595 -0.003426 0.000588">
+                              <inertial pos="0.017968 0.00016 -0.007378" quat="-0.438687 0.419167 -0.554419 0.569624" mass="0.01102" diaginertia="0.000002476 0.000002424 0.000000259" />
+                              <geom name="left_index_2_visual_0" class="RH56E2_hand_visual" quat="-0.706999 -0.012337 0.012337 0.706999" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_index_2" />
+                              <geom name="left_index_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.016243 0.001668 -0.005324" quat="-0.457352 -0.475889 0.539285 0.523" type="cylinder" />
+                              <geom name="left_index_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.007" pos="0.040659 -0.003998 -0.004471" quat="-0.393363 -0.413624 0.587593 0.573511" type="capsule" />
+                              <body name="left_index_force_sensor_2" pos="0.037635 -0.008165 -0.004769">
+                                <geom name="left_index_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.573776 -0.003636 -0.0052 0.818987" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_index_force_sensor_2" />
+                              </body>
+                              <body name="left_index_force_sensor_3" pos="0.052753 -0.008624 -0.004257">
+                                <geom name="left_index_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.645126 -0.289476 -0.636385 0.308269" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_index_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="left_index_force_sensor_1" pos="0.019869 -0.012046 -0.005961">
+                              <geom name="left_index_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.551752 -0.442232 -0.548415 0.446365" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_index_force_sensor_1" />
+                            </body>
+                          </body>
+                          <body name="left_middle_1" pos="0.157 -0.000565 0.0171">
+                            <inertial pos="0.01101 -0.00137 -0.00806" quat="-0.704916 -0.061027 -0.704665 0.053067" mass="0.01866" diaginertia="0.000003785 0.000003659 0.000001135" />
+                            <geom name="left_middle_1_visual_0" class="RH56E2_hand_visual" quat="-0.707107 0.000001 -0.000001 0.707107" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_middle_1" />
+                            <geom name="left_middle_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.010628 -0.001434 -0.007" quat="-0.500001 -0.499999 0.499999 0.500001" type="cylinder" />
+                            <body name="left_middle_2" pos="0.032596 -0.003426 -0.00055">
+                              <inertial pos="0.02314 -0.0019 -0.00802" quat="-0.411948 0.416861 -0.570003 0.575867" mass="0.01767" diaginertia="0.000005083 0.000005004 0.000000537" />
+                              <geom name="left_middle_2_visual_0" class="RH56E2_hand_visual" quat="-0.707107 0.000001 -0.000001 0.707107" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_middle_2" />
+                              <geom name="left_middle_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.016047 0.001668 -0.005887" quat="-0.466693 -0.466691 0.531223 0.531225" type="cylinder" />
+                              <geom name="left_middle_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.007" pos="0.040478 -0.003998 -0.005887" quat="-0.403556 -0.403554 0.580639 0.580641" type="capsule" />
+                              <body name="left_middle_force_sensor_2" pos="0.040962 -0.009086 -0.0061">
+                                <geom name="left_middle_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.398648 -0.58402 -0.398649 0.58402" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_middle_force_sensor_2" />
+                              </body>
+                              <body name="left_middle_force_sensor_3" pos="0.056051 -0.009829 -0.006101">
+                                <geom name="left_middle_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.637265 -0.306419 -0.637265 0.306419" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_middle_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="left_middle_force_sensor_1" pos="0.019649 -0.012046 -0.006651">
+                              <geom name="left_middle_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.550116 -0.444265 -0.550117 0.444266" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_middle_force_sensor_1" />
+                            </body>
+                          </body>
+                          <body name="left_ring_1" pos="0.15683 -0.000565 -0.00453">
+                            <inertial pos="0.009895 -0.00119 -0.009141" quat="-0.667305 -0.056461 -0.7407 0.053665" mass="0.01869" diaginertia="0.000003797 0.00000367 0.000001135" />
+                            <geom name="left_ring_1_visual_0" class="RH56E2_hand_visual" quat="-0.706864 0.018525 -0.018525 0.706864" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_ring_1" />
+                            <geom name="left_ring_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.010247 -0.001434 -0.007547" quat="-0.512928 -0.486729 0.486729 0.512928" type="cylinder" />
+                            <body name="left_ring_2" pos="0.032522 -0.003426 -0.002257">
+                              <inertial pos="0.01676 0.00057 -0.009801" quat="-0.407012 0.462379 -0.580522 0.532486" mass="0.01102" diaginertia="0.000002477 0.000002424 0.00000026" />
+                              <geom name="left_ring_2_visual_0" class="RH56E2_hand_visual" quat="-0.706864 0.018525 -0.018525 0.706864" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_ring_2" />
+                              <geom name="left_ring_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.015717 0.001668 -0.006719" quat="-0.480449 -0.452614 0.518815 0.543268" type="cylinder" />
+                              <geom name="left_ring_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.007" pos="0.040114 -0.003998 -0.007999" quat="-0.418629 -0.388205 0.569869 0.591013" type="capsule" />
+                              <body name="left_ring_force_sensor_2" pos="0.037076 -0.008165 -0.008032">
+                                <geom name="left_ring_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.411281 -0.575171 -0.400285 0.582923" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_ring_force_sensor_2" />
+                              </body>
+                              <body name="left_ring_force_sensor_3" pos="0.052181 -0.008624 -0.00884">
+                                <geom name="left_ring_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.633986 -0.313098 -0.647155 0.284996" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_ring_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="left_ring_force_sensor_1" pos="0.019274 -0.012046 -0.007671">
+                              <geom name="left_ring_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.547535 -0.44744 -0.552549 0.441239" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_ring_force_sensor_1" />
+                            </body>
+                          </body>
+                          <body name="left_little_1" pos="0.15365 -0.000565 -0.025916">
+                            <inertial pos="0.008901 -0.00081 -0.010126" quat="-0.628317 -0.042831 -0.775579 0.043135" mass="0.01869" diaginertia="0.000003796 0.000003672 0.000001133" />
+                            <geom name="left_little_1_visual_0" class="RH56E2_hand_visual" quat="-0.706138 0.037001 -0.037001 0.706138" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_little_1" />
+                            <geom name="left_little_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.009838 -0.001434 -0.008072" quat="-0.525479 -0.473151 0.473151 0.525479" type="cylinder" />
+                            <body name="left_little_2" pos="0.03236 -0.003426 -0.003954">
+                              <inertial pos="0.015604 0.00094 -0.011494" quat="-0.375897 0.492503 -0.598607 0.507752" mass="0.01166" diaginertia="0.000002418 0.000002354 0.000000324" />
+                              <geom name="left_little_2_visual_0" class="RH56E2_hand_visual" quat="-0.706138 0.037001 -0.037001 0.706138" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_little_2" />
+                              <geom name="left_little_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.015344 0.001668 -0.007532" quat="-0.49385 -0.438255 0.506075 0.554917" type="cylinder" />
+                              <geom name="left_little_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.005" pos="0.030815 -0.002083 -0.009158" quat="-0.433386 -0.372619 0.558728 0.600962" type="capsule" />
+                              <body name="left_little_force_sensor_2" pos="0.026892 -0.006451 -0.008977">
+                                <geom name="left_little_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.41888 -0.56969 -0.397409 0.584858" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_little_force_sensor_2" />
+                              </body>
+                              <body name="left_little_force_sensor_3" pos="0.041834 -0.006397 -0.010545">
+                                <geom name="left_little_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.627387 -0.326197 -0.653813 0.269277" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_little_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="left_little_force_sensor_1" pos="0.018846 -0.012046 -0.008668">
+                              <geom name="left_little_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.54482 -0.450751 -0.554819 0.438372" type="mesh" rgba="0.25 0.25 0.25 1" mesh="left_little_force_sensor_1" />
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+          <body name="right_shoulder_pitch_link" pos="0 -0.207501 0.377034">
+            <inertial pos="-0.004731 0.002178 -0.000015" quat="0.061218 -0.24229 -0.710527 -0.657799" mass="1.01739" diaginertia="0.00099763 0.000971356 0.000888014" />
+            <joint name="right_shoulder_pitch_joint" pos="0 0 0" axis="0 0.996195 -0.087157" limited="true" range="-3.14 1.047" actuatorfrclimited="true" actuatorfrcrange="-66 66" />
+            <geom name="right_shoulder_pitch_link_visual_0" class="vr_h3_1_visual" quat="-0.477714 0.521334 -0.521334 -0.477714" type="mesh" mesh="right_shoulder_pitch_link" />
+            <body name="right_shoulder_roll_link" pos="-0.009 0 0">
+              <inertial pos="0.000464 -0.000048 -0.098266" quat="-0.707298 -0.001763 0.005221 0.706894" mass="1.19875" diaginertia="0.00274203 0.00262613 0.00130984" />
+              <joint name="right_shoulder_roll_joint" pos="0 0 0" axis="1 0 0" limited="true" range="-2.356 0" actuatorfrclimited="true" actuatorfrcrange="-66 66" />
+              <geom name="right_shoulder_roll_link_visual_0" class="vr_h3_1_visual" quat="-0.5 0.5 -0.5 0.5" type="mesh" mesh="right_shoulder_roll_link" />
+              <geom name="right_shoulder_roll_link_collision_1" class="vr_h3_1_collision" size="0.045 0.035" pos="0 0 -0.07" quat="-0.707107 0 0 0.707107" type="capsule" />
+              <body name="right_shoulder_yaw_link" pos="0 0 -0.25">
+                <inertial pos="-0.004988 -0.014813 0.055091" quat="-0.773976 -0.167658 -0.129674 0.596689" mass="0.297437" diaginertia="0.000657496 0.000630237 0.000255267" />
+                <joint name="right_shoulder_yaw_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.967 2.967" actuatorfrclimited="true" actuatorfrcrange="-34 34" />
+                <geom name="right_shoulder_yaw_link_visual_0" class="vr_h3_1_visual" quat="0 0 0 1" type="mesh" mesh="right_shoulder_yaw_link" />
+                <geom name="right_shoulder_yaw_link_collision_1" class="vr_h3_1_collision" size="0.03 0.03" pos="0 0 0.03" quat="0 0 0 1" type="capsule" />
+                <body name="right_elbow_pitch_link">
+                  <inertial pos="0.044075 0.001628 -0.000038" quat="-0.488199 0.496567 0.503413 -0.511525" mass="1.59951" diaginertia="0.00528664 0.00522598 0.00130738" />
+                  <joint name="right_elbow_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.524 1.57" actuatorfrclimited="true" actuatorfrcrange="-34 34" />
+                  <geom name="right_elbow_pitch_link_visual_0" class="vr_h3_1_visual" pos="0 0 0" quat="-0.5 0.5 0.5 0.5" type="mesh" mesh="right_elbow_pitch_link" />
+                  <geom name="right_elbow_pitch_link_collision_1" class="vr_h3_1_collision" size="0.045 0.04" pos="0.128 0 0" quat="-0.707107 0 0.707107 0" type="capsule" />
+                  <body name="right_wrist_yaw_link" pos="0.247 0 0">
+                    <inertial pos="-0.062755 -0.000001 0.001511" quat="-0.507916 0.491957 0.491957 -0.507916" mass="0.634027" diaginertia="0.000966 0.000794224 0.000574776" />
+                    <joint name="right_wrist_yaw_joint" pos="0 0 0" axis="-1 0 0" limited="true" range="-2.967 2.967" actuatorfrclimited="true" actuatorfrcrange="-11 11" />
+                    <geom name="right_wrist_yaw_link_visual_0" class="vr_h3_1_visual" quat="-0.5 0.5 0.5 -0.5" type="mesh" mesh="right_wrist_yaw_link" />
+                    <body name="right_wrist_roll_link">
+                      <inertial pos="0.009816 -0.002191 0.000004" quat="-0.713833 -0.700263 -0.005083 -0.006909" mass="0.408402" diaginertia="0.000249017 0.000242019 0.000189964" />
+                      <joint name="right_wrist_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-0.698 1.133" actuatorfrclimited="true" actuatorfrcrange="-11 11" />
+                      <geom name="right_wrist_roll_link_visual_0" class="vr_h3_1_visual" quat="-1 0 0 0" type="mesh" mesh="right_wrist_roll_link" />
+                      <geom name="right_wrist_roll_link_collision_1" class="vr_h3_1_collision" size="0.03 0.01" pos="0.01 0 0" quat="-0.707107 -0.707107 0 0" type="capsule" />
+                      <body name="right_wrist_pitch_link" pos="0.01 0 0">
+                        <inertial pos="0.033152 -0.017465 0.000009" quat="-0.660516 0.660516 0.252424 -0.252424" mass="0.141805" diaginertia="0.000113222 0.000103 0.0000407785" />
+                        <joint name="right_wrist_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.96 0.96" actuatorfrclimited="true" actuatorfrcrange="-11 11" />
+                        <geom name="right_wrist_pitch_link_visual_0" class="vr_h3_1_visual" pos="0 0 0" quat="-0.707107 0.707107 0 0" type="mesh" mesh="right_wrist_pitch_link" />
+                        <geom name="right_wrist_pitch_link_collision_1" class="vr_h3_1_collision" size="0.002399 0.033058 0.025221" pos="0.04441 -0.005139 0" quat="-0.707107 0.707107 0 0" type="box" />
+                        <geom name="right_wrist_pitch_link_collision_2" class="vr_h3_1_collision" size="0.023399 0.022016 0.004221" pos="0.01 -0.038911 0" quat="-0.707107 0.707107 0 0" type="box" />
+                        <body name="right_hand" childclass="RH56E2_hand" pos="0.0535 0 0">
+                          <inertial pos="0.018823 0.000585 0" quat="0.002299 0 -0.000022 -0.999997" mass="0.09" diaginertia="0.000036489 0.000027868 0.00002678" />
+                          <geom name="right_hand_visual_0" class="RH56E2_hand_visual" quat="-0.5 0.5 0.5 -0.5" type="mesh" rgba="1 1 1 1" mesh="right_base_link" />
+                          <geom name="right_hand_collision_1" class="RH56E2_hand_collision" size="0.025 0.015" pos="0.015 0 0" quat="-0.5 0.5 0.5 -0.5" type="cylinder" />
+                          <body name="right_palm_1" pos="0.031 0 0">
+                            <inertial pos="0.0689 -0.00625 0.00223" quat="-0.513057 -0.530966 -0.495858 -0.457136" mass="0.38382" diaginertia="0.000551949 0.000400831 0.000221933" />
+                            <geom name="right_palm_1_visual_0" class="RH56E2_hand_visual" quat="-0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_palm_1" />
+                            <geom name="right_palm_1_collision_1" class="RH56E2_hand_collision" size="0.013 0.042 0.05" pos="0.059 -0.0032 0" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                            <geom name="right_palm_1_collision_2" class="RH56E2_hand_collision" size="0.007 0.026 0.015" pos="0.045 0.0168 -0.012" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                            <geom name="right_palm_1_collision_3" class="RH56E2_hand_collision" size="0.007 0.021 0.01" pos="0.02 0.0168 -0.007" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                            <geom name="right_palm_1_collision_4" class="RH56E2_hand_collision" size="0.007 0.011 0.01" pos="0.0279 0.0168 0.025" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                            <geom name="right_palm_1_collision_5" class="RH56E2_hand_collision" size="0.004 0.005 0.008" pos="0.02799 0.02651 -0.0265" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                            <body name="right_palm_2">
+                              <inertial pos="0.083972 -0.02821 0.000132" quat="-0.461471 -0.533549 -0.536598 -0.463068" mass="0.0205048" diaginertia="0.000023768 0.000012797 0.000012022" />
+                              <geom name="right_palm_2_visual_0" class="RH56E2_hand_visual" quat="-0.5 -0.5 -0.5 -0.5" type="mesh" rgba="1 1 1 1" mesh="right_palm_2" />
+                              <geom name="right_palm_2_collision_1" class="RH56E2_hand_collision" size="0.009 0.04 0.023" pos="0.084 -0.024 0" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                              <geom name="right_palm_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.026 0.014" pos="0.047 -0.023 0" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                              <geom name="right_palm_2_collision_3" class="RH56E2_hand_collision" size="0.007 0.006 0.01" pos="0.051 -0.022 0.032" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                              <geom name="right_palm_2_collision_4" class="RH56E2_hand_collision" size="0.007 0.006 0.01" pos="0.051 -0.022 -0.032" quat="-0.5 -0.5 -0.5 -0.5" type="box" />
+                            </body>
+                            <body name="right_palm_force_sensor" pos="0.089101 0.012296 0.000368">
+                              <geom name="right_palm_force_sensor_visual_0" class="RH56E2_hand_visual" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_palm_force_sensor" />
+                            </body>
+                          </body>
+                          <body name="right_thumb_1" pos="0.0826 0.02101 0.0269">
+                            <inertial pos="-0.00671 0.00067 0.00494" quat="-0.007448 -0.713139 -0.689149 0.128266" mass="0.01537" diaginertia="0.000000991 0.00000087 0.000000655" />
+                            <geom name="right_thumb_1_visual_0" class="RH56E2_hand_visual" quat="-0.5 -0.5 -0.5 -0.5" type="mesh" rgba="1 1 1 1" mesh="right_thumb_1" />
+                            <body name="right_thumb_2" pos="-0.0076 0.013438 0.012862">
+                              <inertial pos="0.01346 -0.00542 0.03301" quat="-0.239399 -0.600123 0.7568 0.09896" mass="0.11034" diaginertia="0.000043147 0.000039737 0.000013095" />
+                              <geom name="right_thumb_2_visual_0" class="RH56E2_hand_visual" pos="0 0 0" quat="-0.5 -0.5 -0.5 0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_thumb_2" />
+                              <geom name="right_thumb_2_collision_1" class="RH56E2_hand_collision" size="0.0125 0.031" pos="0.006548 -0.006 0.032312" quat="-0.682635 0.182903 -0.07396 0.703624" type="cylinder" />
+                              <geom name="right_thumb_2_collision_2" class="RH56E2_hand_collision" size="0.0125 0.026" pos="0.022493 -0.006 0.031516" quat="-0.682635 0.182903 -0.07396 0.703624" type="cylinder" />
+                              <body name="right_thumb_3" pos="0.032799 0.009337 0.052954">
+                                <inertial pos="0.00155 -0.01153 0.01108" quat="-0.302277 -0.685836 0.516107 0.414598" mass="0.01779" diaginertia="0.00000333 0.000003301 0.000002365" />
+                                <geom name="right_thumb_3_visual_0" class="RH56E2_hand_visual" quat="-0.5 -0.5 -0.5 0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_thumb_3" />
+                                <geom name="right_thumb_3_collision_1" class="RH56E2_hand_collision" size="0.013 0.005" pos="0.001955 -0.009419 0.01373" quat="-0.682635 0.182903 -0.07396 0.703624" type="cylinder" />
+                                <body name="right_thumb_force_sensor_2" pos="0.016443 -0.009692 0.008006">
+                                  <geom name="right_thumb_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.394929 -0.583596 -0.650916 -0.282412" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_thumb_force_sensor_2" />
+                                </body>
+                                <body name="right_thumb_4" pos="0.013373 0.002273 0.01865">
+                                  <inertial pos="0.00773 -0.0105 0.01264" quat="0.00049 -0.792918 -0.000562 0.609327" mass="0.00766" diaginertia="0.000001197 0.000001159 0.000000531" />
+                                  <geom name="right_thumb_4_visual_0" class="RH56E2_hand_visual" quat="-0.5 -0.5 -0.5 0.5" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_thumb_4" />
+                                  <geom name="right_thumb_4_collision_1" class="RH56E2_hand_collision" size="0.011 0.005" pos="0.013364 -0.008034 0.014144" quat="-0.622299 0.335774 -0.234291 0.667164" type="capsule" />
+                                  <body name="right_thumb_force_sensor_3" pos="0.020486 -0.008807 0.007634">
+                                    <geom name="right_thumb_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.280358 -0.649156 -0.687966 -0.163398" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_thumb_force_sensor_3" />
+                                  </body>
+                                  <body name="right_thumb_force_sensor_4" pos="0.027914 -0.006833 0.01883">
+                                    <geom name="right_thumb_force_sensor_4_visual_0" class="RH56E2_hand_visual" quat="-0.580362 -0.40411 -0.498607 -0.501266" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_thumb_force_sensor_4" />
+                                  </body>
+                                </body>
+                              </body>
+                              <body name="right_thumb_force_sensor_1" pos="0.033251 -0.007073 0.023424">
+                                <geom name="right_thumb_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.422585 -0.574935 -0.615505 -0.334701" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_thumb_force_sensor_1" />
+                              </body>
+                            </body>
+                          </body>
+                          <body name="right_index_1" pos="0.1564 0.000565 0.038679">
+                            <inertial pos="0.011054 0.00132 -0.007669" quat="0.064339 0.71704 0.053751 -0.691971" mass="0.01869" diaginertia="0.000003797 0.00000367 0.000001136" />
+                            <geom name="right_index_1_visual_0" class="RH56E2_hand_visual" quat="0.01234 0.706999 0.706999 0.01234" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_index_1" />
+                            <geom name="right_index_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.010866 0.001434 -0.006625" quat="-0.491198 0.50865 0.50865 -0.491198" type="cylinder" />
+                            <body name="right_index_2" pos="0.032595 0.003426 0.000588">
+                              <inertial pos="0.017968 -0.00016 -0.007377" quat="-0.419164 0.43869 0.569626 -0.554418" mass="0.01102" diaginertia="0.000002476 0.000002424 0.000000259" />
+                              <geom name="right_index_2_visual_0" class="RH56E2_hand_visual" quat="0.01234 0.706999 0.706999 0.01234" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_index_2" />
+                              <geom name="right_index_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.016243 -0.001668 -0.005323" quat="-0.45735 0.475891 0.539287 -0.522998" type="cylinder" />
+                              <geom name="right_index_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.007" pos="0.040659 0.003998 -0.004471" quat="-0.393361 0.413627 0.587595 -0.573509" type="capsule" />
+                              <body name="right_index_force_sensor_2" pos="0.037635 0.008165 -0.004769">
+                                <geom name="right_index_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.576535 0.409375 0.5817 0.40205" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_index_force_sensor_2" />
+                              </body>
+                              <body name="right_index_force_sensor_3" pos="0.052753 0.008624 -0.004257">
+                                <geom name="right_index_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.308277 0.636379 0.289487 0.645124" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_index_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="right_index_force_sensor_1" pos="0.019869 0.012046 -0.005961">
+                              <geom name="right_index_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.446363 0.548412 0.442234 0.551755" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_index_force_sensor_1" />
+                            </body>
+                          </body>
+                          <body name="right_middle_1" pos="0.157 0.000565 0.0171">
+                            <inertial pos="0.01101 0.00137 -0.00806" quat="0.061027 0.704919 0.053067 -0.704662" mass="0.01866" diaginertia="0.000003785 0.000003659 0.000001135" />
+                            <geom name="right_middle_1_visual_0" class="RH56E2_hand_visual" quat="0.000001 0.707107 0.707107 0.000001" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_middle_1" />
+                            <geom name="right_middle_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.010628 0.001434 -0.007" quat="-0.499999 0.500001 0.500001 -0.499999" type="cylinder" />
+                            <body name="right_middle_2" pos="0.032596 0.003426 -0.00055">
+                              <inertial pos="0.02314 0.0019 -0.00802" quat="-0.416858 0.41195 0.575869 -0.570001" mass="0.01767" diaginertia="0.000005083 0.000005004 0.000000537" />
+                              <geom name="right_middle_2_visual_0" class="RH56E2_hand_visual" quat="0.000001 0.707107 0.707107 0.000001" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_middle_2" />
+                              <geom name="right_middle_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.016047 -0.001668 -0.005887" quat="-0.466691 0.466693 0.531225 -0.531223" type="cylinder" />
+                              <geom name="right_middle_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.007" pos="0.040478 0.003998 -0.005887" quat="-0.403554 0.403556 0.580641 -0.580639" type="capsule" />
+                              <body name="right_middle_force_sensor_2" pos="0.040963 0.009086 -0.0061">
+                                <geom name="right_middle_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.584009 0.398662 0.584011 0.398665" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_middle_force_sensor_2" />
+                              </body>
+                              <body name="right_middle_force_sensor_3" pos="0.056051 0.009829 -0.006101">
+                                <geom name="right_middle_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.306435 0.637256 0.306435 0.63726" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_middle_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="right_middle_force_sensor_1" pos="0.019649 0.012046 -0.006651">
+                              <geom name="right_middle_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.444268 0.550112 0.444268 0.550117" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_middle_force_sensor_1" />
+                            </body>
+                          </body>
+                          <body name="right_ring_1" pos="0.15683 0.000565 -0.00453">
+                            <inertial pos="0.009895 0.00119 -0.009141" quat="0.056461 0.667307 0.053665 -0.740698" mass="0.01869" diaginertia="0.000003797 0.00000367 0.000001135" />
+                            <geom name="right_ring_1_visual_0" class="RH56E2_hand_visual" quat="-0.018523 0.706864 0.706864 -0.018523" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_ring_1" />
+                            <geom name="right_ring_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.010247 0.001434 -0.007547" quat="-0.512926 0.486731 0.486731 -0.512926" type="cylinder" />
+                            <body name="right_ring_2" pos="0.032523 0.003426 -0.002256">
+                              <inertial pos="0.01676 -0.00057 -0.009801" quat="-0.462378 0.407014 0.532487 -0.580521" mass="0.01102" diaginertia="0.000002477 0.000002424 0.00000026" />
+                              <geom name="right_ring_2_visual_0" class="RH56E2_hand_visual" quat="-0.018523 0.706864 0.706864 -0.018523" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_ring_2" />
+                              <geom name="right_ring_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.015717 -0.001668 -0.006719" quat="-0.480447 0.452616 0.518816 -0.543267" type="cylinder" />
+                              <geom name="right_ring_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.007" pos="0.040114 0.003998 -0.007999" quat="-0.418627 0.388207 0.56987 -0.591012" type="capsule" />
+                              <body name="right_ring_force_sensor_2" pos="0.037076 0.008165 -0.008032">
+                                <geom name="right_ring_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.582921 0.400284 0.575172 0.411282" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_ring_force_sensor_2" />
+                              </body>
+                              <body name="right_ring_force_sensor_3" pos="0.052181 0.008624 -0.00884">
+                                <geom name="right_ring_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.284985 0.647158 0.31309 0.633991" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_ring_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="right_ring_force_sensor_1" pos="0.019274 0.012046 -0.007671">
+                              <geom name="right_ring_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.441238 0.552548 0.447441 0.547537" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_ring_force_sensor_1" />
+                            </body>
+                          </body>
+                          <body name="right_little_1" pos="0.15365 0.000565 -0.025916">
+                            <inertial pos="0.008901 0.00081 -0.010126" quat="0.042831 0.628319 0.043135 -0.775577" mass="0.01869" diaginertia="0.000003796 0.000003672 0.000001133" />
+                            <geom name="right_little_1_visual_0" class="RH56E2_hand_visual" quat="-0.036999 0.706138 0.706138 -0.036999" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_little_1" />
+                            <geom name="right_little_1_collision_1" class="RH56E2_hand_collision" size="0.01 0.016" pos="0.009838 0.001434 -0.008072" quat="-0.525477 0.473153 0.473153 -0.525477" type="cylinder" />
+                            <body name="right_little_2" pos="0.03236 0.003426 -0.003953">
+                              <inertial pos="0.015604 -0.00094 -0.011494" quat="-0.492502 0.375898 0.507753 -0.598606" mass="0.01166" diaginertia="0.000002418 0.000002354 0.000000324" />
+                              <geom name="right_little_2_visual_0" class="RH56E2_hand_visual" quat="-0.036999 0.706138 0.706138 -0.036999" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_little_2" />
+                              <geom name="right_little_2_collision_1" class="RH56E2_hand_collision" size="0.008 0.015" pos="0.015344 -0.001668 -0.007532" quat="-0.493849 0.438257 0.506077 -0.554916" type="cylinder" />
+                              <geom name="right_little_2_collision_2" class="RH56E2_hand_collision" size="0.008 0.005" pos="0.030815 0.002083 -0.009157" quat="-0.433384 0.372621 0.558729 -0.600961" type="capsule" />
+                              <body name="right_little_force_sensor_2" pos="0.026892 0.006451 -0.008977">
+                                <geom name="right_little_force_sensor_2_visual_0" class="RH56E2_hand_visual" quat="-0.584857 0.397408 0.56969 0.418882" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_little_force_sensor_2" />
+                              </body>
+                              <body name="right_little_force_sensor_3" pos="0.041834 0.006397 -0.010545">
+                                <geom name="right_little_force_sensor_3_visual_0" class="RH56E2_hand_visual" quat="-0.26928 0.653809 0.3262 0.627388" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_little_force_sensor_3" />
+                              </body>
+                            </body>
+                            <body name="right_little_force_sensor_1" pos="0.018846 0.012046 -0.008668">
+                              <geom name="right_little_force_sensor_1_visual_0" class="RH56E2_hand_visual" quat="-0.438371 0.554817 0.450752 0.544822" type="mesh" rgba="0.25 0.25 0.25 1" mesh="right_little_force_sensor_1" />
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+          <body name="head_yaw_link" pos="-0.015 0 0.5961">
+            <inertial pos="0.00019 0.002172 -0.068976" quat="0.243001 0.035172 -0.080568 0.966034" mass="0.580213" diaginertia="0.000979705 0.000973917 0.000499378" />
+            <joint name="head_yaw_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-1.57 1.57" actuatorfrclimited="true" actuatorfrcrange="-11 11" />
+            <geom name="head_yaw_link_visual_0" class="vr_h3_1_visual" quat="0 0 0 1" type="mesh" density="1000" mesh="head_yaw_link" />
+            <geom name="head_yaw_link_visual_1" class="vr_h3_1_visual" quat="0 0 0 1" type="mesh" mesh="head_yaw_link" />
+            <body name="head_pitch_link">
+              <inertial pos="0.038373 -0.000466 -0.000609" quat="-0.639582 0.001312 0.76872 0.001471" mass="0.791523" diaginertia="0.00462485 0.00407902 0.00278513" />
+              <joint name="head_pitch_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-0.26 0.44" actuatorfrclimited="true" actuatorfrcrange="-4.8 4.8" />
+              <geom name="head_pitch_link_visual_0" class="vr_h3_1_visual" quat="0 0 0.707107 0.707107" type="mesh" density="1000" mesh="head_pitch_link" />
+              <geom name="head_pitch_link_visual_1" class="vr_h3_1_visual" quat="0 0 0.707107 0.707107" type="mesh" mesh="head_pitch_link" />
+              <geom name="head_pitch_link_collision_2" class="vr_h3_1_collision" size="0.08 0.035" pos="0.02 0 0.05" quat="-0.5 -0.5 0.5 0.5" type="capsule" />
+              <geom name="head_pitch_link_collision_3" class="vr_h3_1_collision" size="0.08 0.035" pos="0.02 0 -0.03" quat="-0.5 -0.5 0.5 0.5" type="capsule" />
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <equality>
+    </equality>
+</mujoco>
