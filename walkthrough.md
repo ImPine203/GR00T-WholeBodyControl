@@ -425,6 +425,81 @@ Sau đó chạy demo:
 ./.venv/bin/python scripts/interactive_demo_vr_h3.py
 ```
 
+## VR H3 Feature Roundtrip Visualization
+
+`scripts/check_vr_h3_feature_roundtrip.py` now supports MuJoCo playback for the
+source qpos or the inverse-feature reconstructed qpos.
+
+Use this to inspect whether:
+
+```text
+CSV/qpos -> motion feature -> inverse feature -> qpos
+```
+
+looks like the original retargeted clip.
+
+Play the reconstructed qpos:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/check_vr_h3_feature_roundtrip.py \
+  datas/vr_h3_data/vr_h3_1/211117/Neutral_walk_forward_003__A057.csv \
+  --play reconstructed \
+  --loop
+```
+
+Play the original source qpos for comparison:
+
+```bash
+./.venv/bin/python scripts/check_vr_h3_feature_roundtrip.py \
+  datas/vr_h3_data/vr_h3_1/211117/Neutral_walk_forward_003__A057.csv \
+  --play source \
+  --loop
+```
+
+## VR H3 Training Input Audit
+
+Before training, audit the selected CSV files so the input is explicit instead
+of relying only on action names.
+
+Small smoke test:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/audit_vr_h3_training_input.py \
+  --allow_actions_file scripts/vr_h3_clean_forward_walk_actions.txt \
+  --limit 10 \
+  --output_dir out/vr_h3_training_input_audit_smoke
+```
+
+Full selected-set audit:
+
+```bash
+./.venv/bin/python scripts/audit_vr_h3_training_input.py \
+  --allow_actions_file scripts/vr_h3_clean_forward_walk_actions.txt \
+  --limit 0 \
+  --output_dir out/vr_h3_training_input_audit_clean_forward_walk
+```
+
+Read:
+
+```text
+out/vr_h3_training_input_audit_clean_forward_walk/summary.md
+out/vr_h3_training_input_audit_clean_forward_walk/clips.csv
+```
+
+Important columns:
+
+```text
+root_rot_err_mean_rad          root heading/orientation roundtrip error
+joint_abs_err_max_rad          joint DOF roundtrip error
+src_joint_limit_max_over_rad   source CSV joint-limit cleanliness
+root_speed_xy_mps              clip translational speed
+root_delta_y_m                 lateral drift in MuJoCo Y
+```
+
 ## Lọc data train theo một style forward-walk sạch
 
 Vấn đề phát hiện:
@@ -516,26 +591,900 @@ Target FPS: 30.0
 
 ## Ignore CSV data local
 
-Update `.gitignore` ở repo root để không đưa CSV data lớn vào git:
+Update `.gitignore` ở repo root để không đưa data/output train lớn vào git:
 
 ```text
-motionbricks/datas/**/*.csv
-motionbricks/out/**/*.csv
+motionbricks/.venv/
+motionbricks/datas/
+motionbricks/datasets/
+motionbricks/out/
+motionbricks/np
+motionbricks/t
+motionbricks/time
 ```
 
 Lý do:
 
-- CSV retarget data nằm trong `motionbricks/datas` rất lớn và chỉ phục vụ train local.
-- CSV trong `motionbricks/out` là log/report sinh ra khi chạy script.
+- `motionbricks/datas` là raw retarget CSV data, rất lớn và chỉ phục vụ train local.
+- `motionbricks/datasets` là feature dataset được prepare từ raw CSV.
+- `motionbricks/out` chứa checkpoint, metric, plot, debug rollout, clip cache sinh ra khi chạy train/demo.
+- `motionbricks/.venv` là virtualenv local.
 - Không ignore toàn bộ `*.csv` ở repo root để tránh vô tình che các CSV example/source đang được track ở module khác.
 
 Verify:
 
 ```bash
-git status --short motionbricks/datas/vr_h3_data/vr_h3_1/210531/walk_forward_amateur_001__A002.csv .gitignore
+git status --short
 ```
 
-Kết quả chỉ còn `.gitignore` modified, file CSV data không hiện trong status.
+Kết quả không còn hiện `motionbricks/.venv`, `motionbricks/datas`, `motionbricks/datasets`, `motionbricks/out` trong status.
+
+## Fix build clip cache cho dataset clean forward-walk
+
+Lỗi gặp khi chạy bash train clean:
+
+```text
+ValueError: No clip matching 'hurry_idle_right_R_001__A349' found in dataset keyids
+```
+
+Nguyên nhân:
+
+- `train_vr_h3_locomotion_toe.sh` đã chuyển sang dataset allowlist clean forward-walk.
+- `build_vr_h3_clip_cache.py` vẫn hard-code các clip từ dataset cũ:
+  - `hurry_idle_right_R_001__A349`
+  - `walk_180_R_001__A349`
+  - `walk_180_R_003__A349`
+- Các keyid này không tồn tại trong `datasets/vr_h3_motion_features_clean_forward_walk/motions.pt`.
+
+Fix ban đầu:
+
+```text
+idle_clip:      idle_loop_001__A021
+slow_walk_clip: walk_forward_normal_001__A005
+walk_clip:      walk_ff_loop_180_R_001__A046
+```
+
+Sau đó bỏ hard-code keyid cụ thể:
+
+- `--idle_clip`, `--slow_walk_clip`, `--walk_clip` chuyển thành optional override.
+- Nếu không truyền override, script tự chọn clip đầu tiên trong dataset theo pattern ưu tiên:
+  - idle: `neutral_idle_loop`, `idle_loop`, `idle`
+  - slow_walk: `walk_forward_normal`, `Relaxed_walk_forward`, `Neutral_walk_forward`, `walk_ff_loop_180_R_normal_pace`, `walk_forward_loop`, `walk`
+  - walk: `walk_ff_loop_180_R`, `walk_forward_loop`, `neutral_walk_180_R`, `Loop_Forward_Walk`, `walk`
+- Nếu dataset không có pattern phù hợp, script fail ngay với danh sách pattern đã thử và preview keyid đầu tiên, thay vì fail vì keyid hard-code cũ.
+
+File sửa:
+
+```text
+motionbricks/scripts/build_vr_h3_clip_cache.py
+```
+
+Đồng thời thêm:
+
+```python
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+```
+
+để tránh warning matplotlib cache khi chạy script riêng.
+
+Verify:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/build_vr_h3_clip_cache.py \
+  --dataset_pt datasets/vr_h3_motion_features_clean_forward_walk/motions.pt \
+  --output /tmp/VR_H3-clean-forward-walk-clip-test.ckpt
+```
+
+Kết quả sau khi bỏ hard-code:
+
+```text
+idle: neutral_idle_loop_001__A073 frames=64
+slow_walk: walk_forward_normal_001__A005 frames=64
+walk: walk_ff_loop_180_R_001__A046 frames=64
+Saved VR H3 clip cache: /tmp/VR_H3-clean-forward-walk-auto-clip-test.ckpt
+```
+
+## Đánh giá train clean forward-walk
+
+Log train clean forward-walk:
+
+```text
+Converted clips: 1302
+Failed files: 0
+CSV files found: 142220
+CSV files selected: 1302
+Allow actions:
+  Loop_Forward_Walk
+  Neutral_walk_forward
+  Relaxed_walk_forward
+  idle_loop
+  neutral_idle_loop
+  neutral_walk_180_R
+  walk_ff_loop_180_R
+  walk_ff_loop_180_R_normal_pace
+  walk_forward_loop
+  walk_forward_normal
+Feature dim: 402
+```
+
+Train steps:
+
+```text
+VQVAE: 20000 steps, 123 epochs over filtered dataset
+Pose:  50000 steps, 307 epochs
+Root:  50000 steps, 307 epochs
+```
+
+Metric summary:
+
+```text
+VQVAE train_loss_epoch:             2.29893 -> 0.145832
+VQVAE recons_pose_epoch:            1.79627 -> 0.0894741
+VQVAE joint_vel_epoch:              0.249885 -> 0.0254812
+VQVAE skate_contact_epoch:          0.239148 -> 0.050585
+VQVAE perplexity_pose_epoch:        6.8371 -> 7.87079
+
+Pose train_loss_epoch:              2.25532 -> 0.834075
+
+Root train_loss_epoch:              8.66924 -> 2.00827
+Root global_root_recons_epoch:      2.44874 -> 0.015092
+Root local_root_recons_epoch:       1.22246 -> 0.069289
+Root num_token_loss_epoch:          2.5493 -> 1.90879
+Root top_1_accuracy_epoch:          0.0867896 -> 0.289447
+Root top_3_accuracy_epoch:          0.274578 -> 0.554816
+Root top_5_accuracy_epoch:          0.465054 -> 0.6875
+```
+
+Nhận định:
+
+- Data prepare sạch: không có file fail, số clip giảm từ 60450/142220 xuống 1302 clip đúng allowlist.
+- VQVAE học tốt: reconstruction giảm mạnh, contact/skate loss giảm, perplexity quanh 7-8 là không bị collapse codebook.
+- Pose model tốt hơn đợt train rộng: pose loss cuối khoảng `0.834`, thấp hơn đợt locomotion rộng trước đó khoảng `1.17`.
+- Root reconstruction rất tốt: global root recon xuống `0.015`, local root recon xuống `0.069`.
+- Root token prediction vẫn là điểm cần chú ý: top-1 khoảng `29%`, top-5 khoảng `69%`. Tốt hơn đợt trước nhưng chưa đảm bảo demo WASD mượt nếu root mode/token bị chọn sai.
+- Vì dataset chỉ 1302 clip nhưng train 307 epochs, có rủi ro overfit. Cần xem demo/rollout thực tế để kết luận.
+
+Đã thử chạy:
+
+```bash
+./.venv/bin/python scripts/debug_vr_h3_rollout.py --steps 180 --warmup_steps 30 --key w
+```
+
+Trong môi trường tool hiện tại bị lỗi:
+
+```text
+RuntimeError: No CUDA GPUs are available
+```
+
+Nên phần gait rollout cần chạy trực tiếp trên máy có GPU của user để xác nhận:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w
+
+./.venv/bin/python scripts/analyze_vr_h3_gait.py
+```
+
+## Fix default cache path cho clean forward-walk demo/debug
+
+User chạy debug sau khi train clean nhưng output primitive vẫn giống cache cũ.
+
+Nguyên nhân:
+
+- `train_vr_h3_locomotion_toe.sh` tạo cache mới:
+
+```text
+out/VR_H3-clean-forward-walk-clip.ckpt
+```
+
+- Nhưng các script demo/debug/analyze vẫn default về cache cũ:
+
+```text
+out/VR_H3-locomotion-toe-clip.ckpt
+```
+
+File đã sửa default:
+
+```text
+motionbricks/scripts/interactive_demo_vr_h3.py
+motionbricks/scripts/debug_vr_h3_rollout.py
+motionbricks/scripts/analyze_vr_h3_gait.py
+```
+
+Default mới:
+
+```text
+out/VR_H3-clean-forward-walk-clip.ckpt
+```
+
+Verify primitive cache mới:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+./.venv/bin/python scripts/analyze_vr_h3_gait.py --cache out/VR_H3-clean-forward-walk-clip.ckpt
+```
+
+Primitive mới:
+
+```text
+primitive idle:
+  root_delta_xy: [0.0037, -0.0019]
+  left_lift_p95: 0.0011
+  right_lift_p95: 0.0005
+
+primitive slow_walk:
+  root_delta_xy: [0.7992, 0.0410]
+  left_lift_p95: 0.2050
+  right_lift_p95: 0.1118
+  left_right_lift_corr: -0.3377
+
+primitive walk:
+  root_delta_xy: [0.5436, 0.0063]
+  left_lift_p95: 0.2494
+  right_lift_p95: 0.0860
+  left_right_lift_corr: -0.2533
+```
+
+Lưu ý:
+
+- Lần verify này vẫn dùng rollout NPZ cũ cho phần `generated rollout after warmup`.
+- Cần chạy lại `debug_vr_h3_rollout.py` sau khi đổi default cache để có rollout mới đúng cache clean.
+
+## Đánh giá rollout clean cache mới
+
+User chạy lại sau khi default cache đã chuyển sang:
+
+```text
+out/VR_H3-clean-forward-walk-clip.ckpt
+```
+
+Kết quả rollout `w`:
+
+```text
+root_delta_after_warmup_xyz: [6.0242, -0.4294, -0.0176]
+max_joint_limit_violation_rad: 0.0
+joint_limit_violation_frames: 0
+mode ids seen: [0, 2]
+```
+
+Gait generated sau warmup:
+
+```text
+frames: 150
+root_delta_xy: [6.0242, -0.4294]
+left_lift_p95:  0.0738
+right_lift_p95: 0.1081
+forward_step_asymmetry: 0.2745
+left_right_lift_corr: 0.7880
+```
+
+Primitive clean cache:
+
+```text
+primitive idle:
+  root_delta_xy: [0.0037, -0.0019]
+  left_lift_p95: 0.0011
+  right_lift_p95: 0.0005
+
+primitive slow_walk:
+  root_delta_xy: [0.7992, 0.0410]
+  left_lift_p95: 0.2050
+  right_lift_p95: 0.1118
+  left_right_lift_corr: -0.3377
+
+primitive walk:
+  root_delta_xy: [0.5436, 0.0063]
+  left_lift_p95: 0.2494
+  right_lift_p95: 0.0860
+  left_right_lift_corr: -0.2533
+```
+
+Nhận định:
+
+- Joint limit sạch: không còn vặn khớp vượt giới hạn.
+- Primitive cache sạch có pha chân đúng hơn: `left_right_lift_corr` âm cho slow_walk/walk.
+- Generated rollout vẫn chưa đạt: `left_right_lift_corr = 0.7880` là hai chân nâng gần cùng pha, giống hopping/shuffling hơn walking tự nhiên.
+- Root đi quá nhanh: `6.024m / 150 frames @ 30 FPS = ~1.20 m/s`, trong khi primitive walk chỉ khoảng `0.54m / 64 frames = ~0.25 m/s`.
+- Vấn đề tiếp theo không còn nằm ở cache primitive hay joint limit, mà nằm ở root/pose generation khi bị điều khiển bằng WASD: target/root speed và token generation chưa giữ được gait phase của primitive.
+
+Hướng xử lý tiếp:
+
+- Thử giảm speed control trong demo/debug trước khi train lại.
+- Nếu giảm speed giúp gait tự nhiên hơn, update default VR H3 speed/target velocity.
+- Nếu vẫn bị hai chân cùng pha, cần kiểm tra conditioning của pose/root model hoặc tăng data clean walk loop cùng style.
+
+## Fix speed_scale không có tác dụng trong VR H3 debug/demo
+
+User chạy:
+
+```bash
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w \
+  --speed_scale 0.25,0.25
+```
+
+nhưng rollout y hệt `speed_scale 1.0,1.0`.
+
+Nguyên nhân:
+
+- `motionbricks/motion_backbone/demo/utils.py` chỉ truyền `args.speed_scale` vào `full_navigation_agent` khi `args.random_speed_scale=True`.
+- `debug_vr_h3_rollout.py` hard-code `random_speed_scale=0`, nên `--speed_scale` bị bỏ qua.
+- `interactive_demo_vr_h3.py` cũng default `random_speed_scale=0`, nên user truyền `--speed_scale` cũng không tác dụng nếu không truyền thêm `--random_speed_scale 1`.
+
+Fix:
+
+- `scripts/debug_vr_h3_rollout.py`: set `random_speed_scale=1` trong `build_args`.
+- `scripts/interactive_demo_vr_h3.py`: đổi default:
+
+```text
+random_speed_scale: 1
+speed_scale:        1.0,1.0
+```
+
+Như vậy:
+
+- Default demo vẫn deterministic vì min=max=1.0.
+- Khi truyền `--speed_scale 0.25,0.25`, scale được áp dụng thật.
+- Nếu muốn random speed, có thể truyền khoảng như `--speed_scale 0.8,1.2`.
+
+Verify:
+
+```bash
+./.venv/bin/python -m py_compile scripts/debug_vr_h3_rollout.py scripts/interactive_demo_vr_h3.py
+```
+
+Đã pass. Chạy rollout trong tool hiện tại vẫn lỗi do môi trường không thấy CUDA:
+
+```text
+RuntimeError: No CUDA GPUs are available
+```
+
+Nên cần user chạy lại trên máy GPU để kiểm tra số gait mới.
+
+## Thêm target_vel override cho VR H3 speed debug/demo
+
+Sau khi bật `speed_scale`, user chạy `--speed_scale 0.25,0.25`:
+
+```text
+root_delta_after_warmup_xyz: [5.3833, -0.4090, -0.0128]
+left_right_lift_corr: 0.6256
+```
+
+So với trước:
+
+```text
+root_delta_after_warmup_xyz: [6.0242, -0.4294, -0.0176]
+left_right_lift_corr: 0.7880
+```
+
+Nhận định:
+
+- `speed_scale` đã có tác dụng nhưng yếu, root speed chỉ giảm khoảng 10%.
+- Gait vẫn sai phase: `left_right_lift_corr` vẫn dương cao.
+- Cần một cơ chế ép target root speed trực tiếp hơn.
+
+Thay đổi:
+
+- Thêm helper vào `scripts/interactive_demo_g1.py`:
+
+```text
+_apply_optional_target_vel(control_signals, args)
+```
+
+- Thêm option:
+
+```text
+--target_vel
+```
+
+vào:
+
+```text
+scripts/debug_vr_h3_rollout.py
+scripts/interactive_demo_vr_h3.py
+```
+
+Ý nghĩa:
+
+- `--target_vel` là tốc độ root mong muốn theo m/s cho non-idle mode.
+- Vì `full_agent` nhân `target_vel` với `2.0` nội bộ, script truyền vào `target_vel / 2.0` để CLI giữ đúng đơn vị m/s.
+
+Verify:
+
+```bash
+./.venv/bin/python -m py_compile \
+  scripts/debug_vr_h3_rollout.py \
+  scripts/interactive_demo_vr_h3.py \
+  scripts/interactive_demo_g1.py
+```
+
+Đã pass.
+
+Lệnh test tiếp theo:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w \
+  --target_vel 0.3
+
+./.venv/bin/python scripts/analyze_vr_h3_gait.py
+```
+
+Nếu vẫn quá nhanh hoặc corr vẫn dương cao, thử tiếp:
+
+```bash
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w \
+  --target_vel 0.2
+```
+
+## target_vel không tác động đủ, cần test slow_walk mode
+
+User chạy:
+
+```bash
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w \
+  --target_vel 0.3
+```
+
+Kết quả y hệt baseline không target_vel:
+
+```text
+root_delta_after_warmup_xyz: [6.0242, -0.4294, -0.0176]
+left_right_lift_corr: 0.7880
+```
+
+Nhận định:
+
+- `target_vel` chưa giúp điều khiển tốc độ/gait trong rollout này.
+- Tuning speed không còn là hướng chính nếu output vẫn y hệt.
+- VR H3 hiện có primitive `slow_walk` với phase tốt hơn `generated walk`.
+- `clip_holder_VR_H3.DEFAULT_KEYS["slow_walk"] = "v"`, nên với WASD/debug có thể ép slow_walk bằng cách giữ `w` và `v` cùng lúc.
+
+Lệnh test tiếp theo:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w,v
+
+./.venv/bin/python scripts/analyze_vr_h3_gait.py
+```
+
+Kỳ vọng:
+
+- `mode ids seen` nên có `[0, 1]` thay vì `[0, 2]`.
+- Nếu `left_right_lift_corr` giảm xuống gần 0 hoặc âm, thì default WASD nên chuyển sang slow_walk hoặc giảm mapping `w -> walk`.
+- Nếu vẫn dương cao, vấn đề nằm sâu hơn ở model generation/conditioning, không chỉ mode/speed.
+
+## Đánh giá slow_walk mode bằng w,v
+
+User chạy:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w,v
+
+./.venv/bin/python scripts/analyze_vr_h3_gait.py
+```
+
+Kết quả:
+
+```text
+mode ids seen: [0, 1]
+max_joint_limit_violation_rad: 0.0
+joint_limit_violation_frames: 0
+root_delta_after_warmup_xyz: [3.5166, 0.0917, 0.0167]
+```
+
+Generated slow_walk sau warmup:
+
+```text
+frames: 150
+root_delta_xy: [3.5166, 0.0917]
+left_lift_p95:  0.0469
+right_lift_p95: 0.0849
+forward_step_asymmetry: 0.0425
+left_right_lift_corr: 0.4319
+```
+
+So sánh với generated walk trước đó:
+
+```text
+walk mode:
+  root_delta_xy: [6.0242, -0.4294]
+  forward_step_asymmetry: 0.2745
+  left_right_lift_corr: 0.7880
+
+slow_walk mode:
+  root_delta_xy: [3.5166, 0.0917]
+  forward_step_asymmetry: 0.0425
+  left_right_lift_corr: 0.4319
+```
+
+Nhận định:
+
+- `slow_walk` mode tốt hơn `walk` mode rõ rệt:
+  - tốc độ root giảm đáng kể.
+  - lateral drift giảm.
+  - forward step asymmetry giảm rất mạnh.
+  - lift correlation giảm từ `0.7880` xuống `0.4319`.
+- Tuy nhiên `left_right_lift_corr = 0.4319` vẫn dương, tức hai chân vẫn còn nâng cùng pha một phần; chưa đạt gait tự nhiên.
+- Vì primitive slow_walk có `left_right_lift_corr = -0.3377`, nhưng generated slow_walk vẫn dương, vấn đề còn nằm ở model generation/conditioning chứ không chỉ chọn primitive/mode.
+
+Hướng tiếp theo:
+
+- Tạm thời nên map phím `w` của VR H3 sang `slow_walk` để demo đỡ xấu hơn.
+- Sau đó xử lý sâu hơn bằng cách:
+  - lọc dataset walk loop đồng nhất hơn nữa,
+  - tăng data clean cùng style,
+  - hoặc kiểm tra root/pose conditioning vì generated không giữ gait phase của primitive.
+
+## Fix phím WASD bị MuJoCo viewer ăn shortcut
+
+Vấn đề:
+
+- Khi chạy:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+./.venv/bin/python scripts/interactive_demo_vr_h3.py
+```
+
+- Bấm `w` vừa điều khiển VR H3, vừa kích hoạt shortcut `w` của MuJoCo viewer.
+
+Nguyên nhân:
+
+- Controller đọc keyboard bằng `pynput`, nhưng MuJoCo viewer vẫn nhận keyboard event của cùng phím.
+- `interactive_demo_g1.py` đã có helper `_disable_mujoco_keyboard_shortcuts`, nhưng phần X11 grab cũ dùng keycode không chắc chắn và chỉ tìm window MuJoCo một lần.
+
+Fix:
+
+- Sửa `scripts/interactive_demo_g1.py`:
+  - dùng `XK.string_to_keysym` để grab đúng lowercase/uppercase keysyms.
+  - retry tìm window MuJoCo trong khoảng 2 giây.
+  - grab các phím controller để MuJoCo không xử lý shortcut trùng với WASD/controller.
+
+Verify:
+
+```bash
+./.venv/bin/python -m py_compile scripts/interactive_demo_g1.py scripts/interactive_demo_vr_h3.py
+```
+
+Đã pass.
+
+## Tạo pipeline train walk normal only
+
+Mục tiêu:
+
+- Test giả thuyết: train quá nhiều kiểu walk trong cùng một action làm generated gait bị lẫn phase.
+- Tạo một experiment hẹp chỉ dùng một style walk: `walk_forward_normal`.
+- Vẫn giữ idle để demo có trạng thái đứng yên.
+
+File allowlist mới:
+
+```text
+motionbricks/scripts/vr_h3_walk_normal_only_actions.txt
+```
+
+Nội dung:
+
+```text
+idle_loop
+neutral_idle_loop
+walk_forward_normal
+```
+
+File bash mới:
+
+```text
+motionbricks/scripts/train_vr_h3_walk_normal_only.sh
+```
+
+Bash này chỉ wrap lại pipeline train hiện có, nhưng override output riêng:
+
+```text
+ALLOW_ACTIONS_FILE=scripts/vr_h3_walk_normal_only_actions.txt
+OUTPUT_DIR=datasets/vr_h3_motion_features_walk_normal_only
+CLIP_CKPT=out/VR_H3-walk-normal-only-clip.ckpt
+PLOTS_DIR=out/vr_h3_walk_normal_only_training_plots
+```
+
+Kiểm tra số CSV được chọn:
+
+```text
+allow_actions: ['idle_loop', 'neutral_idle_loop', 'walk_forward_normal']
+csv_found: 142220
+csv_selected: 624
+```
+
+Prepare smoke test:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/prepare_vr_h3_data.py \
+  --input_dir datas/vr_h3_data/vr_h3_1 \
+  --output_dir /tmp/vr_h3_walk_normal_only_prepare_test \
+  --allow_actions_file scripts/vr_h3_walk_normal_only_actions.txt \
+  --limit 5 \
+  --progress_every 0
+```
+
+Kết quả:
+
+```text
+Converted clips: 5
+Failed files: 0
+CSV files selected: 5
+```
+
+Lệnh train full:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+bash scripts/train_vr_h3_walk_normal_only.sh
+```
+
+Sau train, chạy debug với cache riêng:
+
+```bash
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --clips_ckpt out/VR_H3-walk-normal-only-clip.ckpt \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w
+
+./.venv/bin/python scripts/analyze_vr_h3_gait.py \
+  --cache out/VR_H3-walk-normal-only-clip.ckpt
+```
+
+## Đánh giá rollout walk-normal-only
+
+User train xong pipeline:
+
+```text
+ALLOW_ACTIONS_FILE=scripts/vr_h3_walk_normal_only_actions.txt
+Converted clips: 624
+Failed files: 0
+Dataset: datasets/vr_h3_motion_features_walk_normal_only/motions.pt
+Clip ckpt: out/VR_H3-walk-normal-only-clip.ckpt
+```
+
+Debug:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/debug_vr_h3_rollout.py \
+  --clips_ckpt out/VR_H3-walk-normal-only-clip.ckpt \
+  --steps 180 \
+  --warmup_steps 30 \
+  --key w
+
+./.venv/bin/python scripts/analyze_vr_h3_gait.py \
+  --cache out/VR_H3-walk-normal-only-clip.ckpt
+```
+
+Kết quả:
+
+```text
+mode ids seen: [0, 2]
+max_joint_limit_violation_rad: 5.245e-08
+joint_limit_violation_frames: 435
+root_delta_after_warmup_xyz: [3.5607, 1.3025, 0.0171]
+```
+
+Lưu ý:
+
+- `max_joint_limit_violation_rad = 5e-08` là nhiễu số học rất nhỏ, không phải violation thực tế.
+- `joint_limit_violation_frames = 435` xuất hiện vì nhiều joint chạm sát limit với sai số floating point.
+
+Generated gait:
+
+```text
+left_lift_p95:  0.5887
+right_lift_p95: 0.5629
+left_speed_mean/max:  [3.3385, 23.6856]
+right_speed_mean/max: [3.8317, 19.9810]
+forward_step_asymmetry: 0.3755
+left_right_lift_corr: 0.0666
+```
+
+Primitive walk-normal-only:
+
+```text
+left_lift_p95:  0.2042
+right_lift_p95: 0.1128
+left_right_lift_corr: -0.3403
+```
+
+Nhận định:
+
+- Phase chân cải thiện lớn so với các lần trước:
+  - trước đó `walk` corr khoảng `0.7880`.
+  - `slow_walk` corr khoảng `0.4319`.
+  - walk-normal-only corr còn `0.0666`, gần ngưỡng chấp nhận được.
+- Nhưng generated motion bị phóng đại:
+  - foot lift p95 khoảng `0.56-0.59m`, cao hơn primitive rất nhiều.
+  - foot speed max lên `20-24 m/s`, quá lớn.
+  - lateral drift `~1.3m`, không ổn.
+  - forward asymmetry `0.3755`, vẫn cao.
+- Kết luận: lọc về một walk style giúp phase, nhưng model đang overfit/unstable hoặc conditioning sinh pose quá mạnh. Dataset walk thật chỉ có 22 CSV, còn lại là idle, nên model không đủ walk variation.
+
+Hướng tiếp theo:
+
+- Không nên tiếp tục giảm dataset walk nữa.
+- Cần scan joint-limit/pose cleanliness trên `walk_forward_normal`.
+- Cần thêm root-relative round-trip metric để chắc pose relative-to-root không bị sai.
+- Nếu data sạch, hướng tiếp là tăng walk data cùng style gần giống nhau, không phải chỉ 22 CSV.
+
+## Test CSV -> feature -> qpos round-trip cho VR H3
+
+Mục tiêu:
+
+- Kiểm tra vòng chuyển đổi dữ liệu train có tự nhất quán không:
+
+```text
+CSV retarget DOF
+  -> MuJoCo qpos
+  -> MotionBricks motion features
+  -> inverse features về MuJoCo qpos
+```
+
+Script mới:
+
+```text
+motionbricks/scripts/check_vr_h3_feature_roundtrip.py
+```
+
+Lệnh kiểm tra:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/check_vr_h3_feature_roundtrip.py \
+  datas/vr_h3_data/vr_h3_1/210531/walk_forward_amateur_001__A002.csv
+```
+
+Kết quả:
+
+```text
+frames: 1179
+global_motion_shape: (1179, 402)
+qpos_shape: (1179, 61)
+finite_src: True
+finite_rec: True
+
+root_pos_err_m:
+  mean=3.76084733
+  p95=10.30655289
+  max=10.58492088
+
+root_rot_err_rad:
+  mean=1.56435907
+  p95=1.56435907
+  max=1.56435943
+
+joint_abs_err_rad:
+  mean=0.00000006
+  p95=0.00000024
+  max=0.00000066
+
+foot_pos_err_m:
+  mean=3.84795856
+  p95=10.46239471
+  max=10.82632923
+```
+
+Nhận định:
+
+- Joint DOF reconstruct cực tốt: sai số max khoảng `6.6e-7 rad`, gần như đúng tuyệt đối.
+- Absolute root position/heading sai lớn. Điều này có thể đến từ canonicalization/root-frame convention khi inverse feature về qpos, không nhất thiết nghĩa là joint mapping sai.
+- Foot absolute position cũng sai lớn vì root absolute bị lệch; cần thêm metric root-relative foot/joint position để tách lỗi root transform khỏi lỗi pose.
+- Reconstructed qpos có vài joint vượt limit nhẹ/vừa trên chính data source:
+
+```text
+left_hip_yaw_joint: over=0.27426132
+right_shoulder_pitch_joint: over=0.21220367
+right_hip_yaw_joint: over=0.14013686
+```
+
+Ý nghĩa:
+
+- Data retarget gốc có thể chứa pose ngoài joint limit VR H3 thật.
+- Pipeline feature không làm hỏng joint angle, nhưng cần cân nhắc clamp/filter data source để model không học pose ngoài limit.
+- Round-trip hiện tại chưa đủ để kết luận root pipeline sai, nhưng đã xác nhận joint mapping CSV/DOF -> feature -> qpos là đúng.
+
+## Test round-trip với VR H3 RL XML
+
+User muốn thử XML:
+
+```text
+motionbricks/assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand_rl.xml
+```
+
+Kiểm tra load MuJoCo:
+
+```text
+nq=61
+nv=60
+njnt=55
+nbody=96
+```
+
+Joint limits chính giống XML đang dùng:
+
+```text
+left_hip_yaw_joint: [-0.785, 0.785]
+right_hip_yaw_joint: [-0.785, 0.785]
+right_shoulder_pitch_joint: [-3.14, 1.047]
+```
+
+Lệnh round-trip:
+
+```bash
+cd /home/tung/GR00T-WholeBodyControl/motionbricks
+
+./.venv/bin/python scripts/check_vr_h3_feature_roundtrip.py \
+  datas/vr_h3_data/vr_h3_1/210531/walk_forward_amateur_001__A002.csv \
+  --scene_xml assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand_rl.xml \
+  --skeleton_xml assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand_rl.xml
+```
+
+Kết quả:
+
+```text
+root_pos_err_m: mean=3.76084733, p95=10.30655289, max=10.58492088
+root_rot_err_rad: mean=1.56435907, p95=1.56435907, max=1.56435943
+joint_abs_err_rad: mean=0.00025205, p95=0.00000030, max=0.09117579
+foot_pos_err_m: mean=3.84795809, p95=10.46239471, max=10.82632923
+```
+
+So với XML cũ:
+
+```text
+old joint_abs_err max: ~0.00000066 rad
+rl  joint_abs_err max: ~0.09117579 rad
+```
+
+Worst joints với RL XML:
+
+```text
+right_shoulder_pitch_joint: max=0.09117579
+left_shoulder_pitch_joint:  max=0.04418260
+```
+
+Nhận định:
+
+- RL XML không cải thiện root round-trip; root pos/rot error gần như y hệt.
+- RL XML làm joint round-trip tệ hơn ở shoulder pitch.
+- Joint limits vẫn tương tự nên không giải quyết vấn đề cleanliness.
+- Không nên chuyển training/converter sang `_rl.xml` nếu mục tiêu là giữ feature round-trip chính xác hơn. XML hiện tại cho joint reconstruction tốt hơn.
 
 ## Crawl danh sách action trong data VR H3
 

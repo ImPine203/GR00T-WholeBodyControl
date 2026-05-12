@@ -16,6 +16,7 @@ setup(
         "transformers",
         "pynput",
         "matplotlib",
+        "joblib",
         "vector-quantize-pytorch",
         "colorlog",
         "adam-atan2-pytorch",

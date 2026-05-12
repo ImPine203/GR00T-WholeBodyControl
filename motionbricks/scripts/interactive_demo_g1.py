@@ -21,7 +21,7 @@ def _disable_mujoco_keyboard_shortcuts(controller_keys='wasdrtfgeqzxcvb'):
     if platform.system() != 'Linux':
         return
     try:
-        from Xlib import display as xdisplay, X
+        from Xlib import display as xdisplay, X, XK
         _xdpy = xdisplay.Display()
         _root = _xdpy.screen().root
 
@@ -38,16 +38,31 @@ def _disable_mujoco_keyboard_shortcuts(controller_keys='wasdrtfgeqzxcvb'):
                     return r
             return None
 
-        time.sleep(0.5)
-        mj_win = _find_window_by_name(_root, 'MuJoCo')
+        mj_win = None
+        for _ in range(20):
+            mj_win = _find_window_by_name(_root, 'MuJoCo')
+            if mj_win:
+                break
+            time.sleep(0.1)
+
         if mj_win:
             for ch in controller_keys:
-                keycode = _xdpy.keysym_to_keycode(ord(ch) - 32)
-                mj_win.grab_key(keycode, X.AnyModifier,
-                                False, X.GrabModeAsync, X.GrabModeAsync)
+                for key_name in {ch.lower(), ch.upper()}:
+                    keysym = XK.string_to_keysym(key_name)
+                    keycode = _xdpy.keysym_to_keycode(keysym)
+                    if keycode:
+                        mj_win.grab_key(keycode, X.AnyModifier,
+                                        False, X.GrabModeAsync, X.GrabModeAsync)
             _xdpy.sync()
     except Exception as e:
         print(f"Note: could not disable MuJoCo keyboard shortcuts: {e}")
+
+
+def _apply_optional_target_vel(control_signals, args):
+    target_vel = getattr(args, 'target_vel', None)
+    if target_vel is not None and target_vel > 0.0:
+        # full_agent multiplies target_vel by 2 internally.
+        control_signals['target_vel'] = t.tensor([target_vel / 2.0], dtype=t.float32)
 
 
 def main(args) -> None:
@@ -88,6 +103,7 @@ def main(args) -> None:
                         control_signals['context_mujoco_qpos'] = context_mujoco_qpos
                     else:
                         control_signals['context_motion_features'] = context_motion_features
+                    _apply_optional_target_vel(control_signals, args)
 
                     with t.no_grad():
                         demo_agent.full_agent.generate_new_frames(
@@ -118,6 +134,7 @@ def main(args) -> None:
                     control_signals['context_mujoco_qpos'] = context_mujoco_qpos
                 else:
                     control_signals['context_motion_features'] = context_motion_features
+                _apply_optional_target_vel(control_signals, args)
 
                 with t.no_grad():
                     demo_agent.full_agent.generate_new_frames(

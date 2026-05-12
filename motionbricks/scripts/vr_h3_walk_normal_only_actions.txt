@@ -1,0 +1,5 @@
+# Narrow VR H3 experiment: one walk style only.
+# Keep idle clips so the WASD demo can initialize and return to standing.
+idle_loop
+neutral_idle_loop
+walk_forward_normal

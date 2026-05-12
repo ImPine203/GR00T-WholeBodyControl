@@ -66,7 +66,7 @@ def summarize(name, qpos_frames, model, fps):
 def main():
     parser = argparse.ArgumentParser(description="Analyze VR H3 gait foot motion")
     parser.add_argument("--rollout_npz", type=str, default="out/vr_h3_debug_rollout_w.npz")
-    parser.add_argument("--cache", type=str, default="out/VR_H3-locomotion-toe-clip.ckpt")
+    parser.add_argument("--cache", type=str, default="out/VR_H3-clean-forward-walk-clip.ckpt")
     parser.add_argument("--scene_xml", type=str,
                         default="assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand_scene.xml")
     parser.add_argument("--fps", type=float, default=30.0)

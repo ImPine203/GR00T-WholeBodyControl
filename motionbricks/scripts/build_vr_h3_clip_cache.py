@@ -3,6 +3,8 @@
 import argparse
 import os
 
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+
 import torch as t
 from omegaconf import OmegaConf, open_dict
 
@@ -21,18 +23,26 @@ def load_motion_rep_from_config(config_path: str):
 
 
 def find_motion_index(keyids, requested):
-    if isinstance(requested, int):
-        return requested
     if requested in keyids:
         return keyids.index(requested)
 
     matches = [idx for idx, key in enumerate(keyids) if requested.lower() in key.lower()]
-    if len(matches) == 1:
+    if matches:
         return matches[0]
-    if not matches:
-        raise ValueError(f"No clip matching '{requested}' found in dataset keyids")
-    matched_names = ", ".join(keyids[idx] for idx in matches[:10])
-    raise ValueError(f"Clip pattern '{requested}' is ambiguous. First matches: {matched_names}")
+    raise ValueError(f"No clip matching '{requested}' found in dataset keyids")
+
+
+def find_first_motion_index(keyids, patterns, clip_name):
+    for pattern in patterns:
+        try:
+            return find_motion_index(keyids, pattern)
+        except ValueError:
+            pass
+    preview = ", ".join(keyids[:20])
+    raise ValueError(
+        f"No source clip found for '{clip_name}'. Patterns tried: {patterns}. "
+        f"First dataset keyids: {preview}"
+    )
 
 
 def main():
@@ -42,9 +52,12 @@ def main():
     parser.add_argument("--config", type=str, default="out/motionbricks_vr_h3_vqvae/version_1/hparams.yaml")
     parser.add_argument("--skeleton_xml", type=str,
                         default="assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand.xml")
-    parser.add_argument("--idle_clip", type=str, default="hurry_idle_right_R_001__A349")
-    parser.add_argument("--slow_walk_clip", type=str, default="walk_180_R_001__A349")
-    parser.add_argument("--walk_clip", type=str, default="walk_180_R_003__A349")
+    parser.add_argument("--idle_clip", type=str, default=None,
+                        help="Optional keyid or substring for the idle cache clip.")
+    parser.add_argument("--slow_walk_clip", type=str, default=None,
+                        help="Optional keyid or substring for the slow-walk cache clip.")
+    parser.add_argument("--walk_clip", type=str, default=None,
+                        help="Optional keyid or substring for the walk cache clip.")
     args = parser.parse_args()
 
     data = t.load(args.dataset_pt, map_location="cpu", weights_only=False)
@@ -52,10 +65,34 @@ def main():
     keyids = data.get("keyids", [])
     if len(keyids) != len(motions):
         raise ValueError("Dataset must contain keyids with the same length as motions")
-    clip_source_names = {
-        "idle": args.idle_clip,
-        "slow_walk": args.slow_walk_clip,
-        "walk": args.walk_clip,
+    clip_source_patterns = {
+        "idle": [
+            args.idle_clip,
+            "neutral_idle_loop",
+            "idle_loop",
+            "idle",
+        ],
+        "slow_walk": [
+            args.slow_walk_clip,
+            "walk_forward_normal",
+            "Relaxed_walk_forward",
+            "Neutral_walk_forward",
+            "walk_ff_loop_180_R_normal_pace",
+            "walk_forward_loop",
+            "walk",
+        ],
+        "walk": [
+            args.walk_clip,
+            "walk_ff_loop_180_R",
+            "walk_forward_loop",
+            "neutral_walk_180_R",
+            "Loop_Forward_Walk",
+            "walk",
+        ],
+    }
+    clip_source_patterns = {
+        clip_name: [pattern for pattern in patterns if pattern]
+        for clip_name, patterns in clip_source_patterns.items()
     }
 
     motion_rep = load_motion_rep_from_config(args.config)
@@ -65,7 +102,9 @@ def main():
 
     clip_items = {}
     for clip_idx, (clip_name, clip_info) in enumerate(clip_holder_VR_H3.CLIPS.items()):
-        source_idx = find_motion_index(keyids, clip_source_names[clip_name])
+        source_idx = find_first_motion_index(
+            keyids, clip_source_patterns[clip_name], clip_name
+        )
         source_motion = motions[source_idx]
         start_frame = clip_info["start_frame"]
         end_frame = min(clip_info["end_frame"], source_motion.shape[0])

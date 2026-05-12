@@ -52,7 +52,7 @@ def build_args(args):
         target_root_realignment=args.target_root_realignment,
         force_canonicalization=args.force_canonicalization,
         skip_ending_target_cond=args.skip_ending_target_cond,
-        random_speed_scale=0,
+        random_speed_scale=1,
         speed_scale=speed_scale,
         generate_dt=args.generate_dt,
         use_qpos=1,
@@ -104,7 +104,7 @@ def main():
                         default="assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand_scene.xml")
     parser.add_argument("--skeleton_xml", type=str,
                         default="assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand.xml")
-    parser.add_argument("--clips_ckpt", type=str, default="out/VR_H3-locomotion-toe-clip.ckpt")
+    parser.add_argument("--clips_ckpt", type=str, default="out/VR_H3-clean-forward-walk-clip.ckpt")
     parser.add_argument("--result_dir", type=str, default="./out")
     parser.add_argument("--data_root", type=str, default="./datasets")
     parser.add_argument("--steps", type=int, default=180)
@@ -118,6 +118,8 @@ def main():
     parser.add_argument("--force_canonicalization", type=int, default=1)
     parser.add_argument("--skip_ending_target_cond", type=int, default=0)
     parser.add_argument("--speed_scale", type=str, default="1.0,1.0")
+    parser.add_argument("--target_vel", type=float, default=None,
+                        help="Optional target root speed in m/s for non-idle modes.")
     parser.add_argument("--generate_dt", type=float, default=2.0)
     args = parser.parse_args()
 
@@ -146,6 +148,9 @@ def main():
             control_info={"force_idle": False, "allowed_mode": None, "key_pressed": key_pressed},
         )
         control_signals["context_mujoco_qpos"] = context_mujoco_qpos
+        if args.target_vel is not None and args.target_vel > 0.0:
+            # full_agent multiplies target_vel by 2 internally.
+            control_signals["target_vel"] = t.tensor([args.target_vel / 2.0], dtype=t.float32)
         modes.append(int(control_signals["mode"].view(-1)[0].item()))
 
         with t.no_grad():

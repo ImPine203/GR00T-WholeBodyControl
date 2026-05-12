@@ -10,7 +10,7 @@ if __name__ == "__main__":
                         default="assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand_scene.xml")
     parser.add_argument("--skeleton_xml", type=str,
                         default="assets/skeletons/vr_h3/mjcf/origin/vr_h3_1_with_rh56e2_hand.xml")
-    parser.add_argument("--clips_ckpt", type=str, default="out/VR_H3-locomotion-toe-clip.ckpt")
+    parser.add_argument("--clips_ckpt", type=str, default="out/VR_H3-clean-forward-walk-clip.ckpt")
     parser.add_argument("--result_dir", type=str, default="./out")
     parser.add_argument("--data_root", type=str, default="./datasets")
     parser.add_argument("--explicit_dataset_folder", type=str, default=None)
@@ -24,8 +24,10 @@ if __name__ == "__main__":
     parser.add_argument("--target_root_realignment", type=int, default=1)
     parser.add_argument("--force_canonicalization", type=int, default=1)
     parser.add_argument("--skip_ending_target_cond", type=int, default=0)
-    parser.add_argument("--random_speed_scale", type=int, default=0)
-    parser.add_argument("--speed_scale", type=str, default="0.8,1.2")
+    parser.add_argument("--random_speed_scale", type=int, default=1)
+    parser.add_argument("--speed_scale", type=str, default="1.0,1.0")
+    parser.add_argument("--target_vel", type=float, default=None,
+                        help="Optional target root speed in m/s for non-idle modes.")
     parser.add_argument("--generate_dt", type=float, default=2.0)
 
     parser.add_argument("--max_steps", type=int, default=10000)

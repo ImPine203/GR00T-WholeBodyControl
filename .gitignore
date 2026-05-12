@@ -206,8 +206,13 @@ teleop_vids/
 *.code-workspace
 # Motion data (large local datasets, not tracked in git)
 data/motion_lib_bones_seed
-motionbricks/datas/**/*.csv
-motionbricks/out/**/*.csv
+motionbricks/.venv/
+motionbricks/datas/
+motionbricks/datasets/
+motionbricks/out/
+motionbricks/np
+motionbricks/t
+motionbricks/time
 
 # Training output logs
 logs_rl/
